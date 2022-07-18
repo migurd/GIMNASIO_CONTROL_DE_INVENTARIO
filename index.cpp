@@ -50,8 +50,15 @@ struct cliente {
 } cli[10];
 
 int main() {
+	int x;
+	do{
+		printf("holaaaaaaa");
+		x++;
+		printf("ayuda dios");
+	}while(x<10);
 	for (int i = 0; i <= 10; i++)
 	{
 		printf("dsff\n");
 	}
+	return 0;
 }
