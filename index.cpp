@@ -1,8 +1,8 @@
 /* 
 Hecho por:
-González Ramírez José Manuel
-Qui Mora Ángel Ernesto
-Tirado Romero Juan José
+Gonzï¿½lez Ramï¿½rez Josï¿½ Manuel
+Qui Mora ï¿½ngel Ernesto
+Tirado Romero Juan Josï¿½
 */
 
 #include <stdio.h>
