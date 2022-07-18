@@ -52,5 +52,5 @@ struct cliente {
 
 
 int main() {
-	
+	return 0;
 }
