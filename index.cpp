@@ -1,3 +1,10 @@
+/* 
+Hecho por:
+González Ramírez José Manuel
+Qui Mora Ángel Ernesto
+Tirado Romero Juan José
+*/
+
 #include <stdio.h>
 #include <windows.h>
 #include <conio.h>
