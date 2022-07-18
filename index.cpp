@@ -53,4 +53,10 @@ struct cliente {
 
 int main() {
 	return 0;
+	int x;
+	do{
+		printf("holaaaaaaa");
+		x++;
+		printf("ayuda dios");
+	}while(x<10);
 }
