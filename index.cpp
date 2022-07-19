@@ -156,7 +156,9 @@ void menuServicios() {
 		system("cls");
 		printf("\t\t\t\t\t======\tMen%c servicios\t======\n\n", 163);
 		printf("\t\t\t\t\t1. Agregar\n", 163);
+		
 		printf("\t\t\t\t\t2. Consultar\n", 163);
+		
 		printf("\t\t\t\t\t3. Modificar\n", 163);
 		printf("\t\t\t\t\t4. Eliminar\n", 163);
 		printf("\t\t\t\t\t5. Regresar\n\n\n", 163);
