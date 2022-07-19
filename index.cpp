@@ -55,6 +55,14 @@ void menuServicios();
 void menuRegistro();
 void menuCliente();
 
+void addEntrenador();
+void addServicios(int idEntrenador);
+void addCliente(int idEntrenador, int idCliente);
+
+void consultarEntrenador();
+
+int nument(int lon);
+
 int main() {
 	menu();
 	return 0;
@@ -65,7 +73,7 @@ void menu() {
 	
 	do {
 		system("cls");
-		printf("\t\t\t\t\t======Men%c principal======\n\n", 163);
+		printf("\t\t\t\t\t======\tMen%c principal\t======\n\n", 163);
 		printf("\t\t\t\t\t1. Men%c entrenador\n", 163);
 		printf("\t\t\t\t\t2. Men%c servicios\n", 163);
 		printf("\t\t\t\t\t3. Men%c registro\n", 163);
@@ -73,7 +81,7 @@ void menu() {
 		printf("\t\t\t\t\t5. Salir\n\n\n", 163);
 		
 		printf("\t\t\t\t\t> > Elige una opci%cn: ", 162);
-		scanf("%i", &option);
+		option = nument(1);
 		
 		switch (option) {
 			case 1:
@@ -107,7 +115,7 @@ void menuEntrenador() {
 	
 	do {
 		system("cls");
-		printf("\t\t\t\t\t======Men%c entrenador======\n\n", 163);
+		printf("\t\t\t\t\t======\tMen%c entrenador\t======\n\n", 163);
 		printf("\t\t\t\t\t1. Agregar\n", 163);
 		printf("\t\t\t\t\t2. Consultar\n", 163);
 		printf("\t\t\t\t\t3. Modificar\n", 163);
@@ -115,7 +123,7 @@ void menuEntrenador() {
 		printf("\t\t\t\t\t5. Regresar\n\n\n", 163);
 		
 		printf("\t\t\t\t\t> > Elige una opci%cn: ", 162);
-		scanf("%i", &option);
+		option = nument(1);
 		
 		switch (option) {
 			case 1:
@@ -151,4 +159,24 @@ void menuRegistro() {
 
 void menuCliente() {
 	
+}
+
+int nument(int lon) {
+	char car, cadena[lon+1]={' '};
+	int x=0;
+	do{
+		car = getch();
+		if(car >= 48 && car <= 57){
+			printf("%c", car);
+			cadena[x]=car;
+			x++;
+		}
+		if(car==8 && x>0){
+			printf("\b \b");
+			x--;
+			cadena[x]=' ';
+		}
+	}while(car != 13 && x < lon);
+	cadena[x]='\n';
+	return atoi(cadena);
 }
