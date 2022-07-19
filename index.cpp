@@ -150,7 +150,42 @@ void menuEntrenador() {
 }
 
 void menuServicios() {
+	int option = 0;
 	
+	do {
+		system("cls");
+		printf("\t\t\t\t\t======\tMen%c servicios\t======\n\n", 163);
+		printf("\t\t\t\t\t1. Agregar\n", 163);
+		printf("\t\t\t\t\t2. Consultar\n", 163);
+		printf("\t\t\t\t\t3. Modificar\n", 163);
+		printf("\t\t\t\t\t4. Eliminar\n", 163);
+		printf("\t\t\t\t\t5. Regresar\n\n\n", 163);
+		
+		printf("\t\t\t\t\t> > Elige una opci%cn: ", 162);
+		option = nument(1);
+		
+		switch (option) {
+			case 1:
+				menuEntrenador();
+				break;
+			case 2:
+				menuServicios();
+				break;
+			case 3:
+				menuRegistro();
+				break;
+			case 4:
+				menuCliente();
+				break;
+			case 5:
+				break;
+			default:
+				system("cls");
+				printf("\n\n\n\n\n\t\t\t\t\tOpci%cn inv%clida. Elige de nuevo.", 162, 160);
+				Sleep(300);
+				break;
+		}
+	} while (option != 5);
 }
 
 void menuRegistro() {
@@ -158,8 +193,45 @@ void menuRegistro() {
 }
 
 void menuCliente() {
+	int option = 0;
 	
+	do {
+		system("cls");
+		printf("\t\t\t\t\t======\tMen%c cliente\t======\n\n", 163);
+		printf("\t\t\t\t\t1. Agregar\n", 163);
+		printf("\t\t\t\t\t2. Consultar\n", 163);
+		printf("\t\t\t\t\t3. Modificar\n", 163);
+		printf("\t\t\t\t\t4. Eliminar\n", 163);
+		printf("\t\t\t\t\t5. Regresar\n\n\n", 163);
+		
+		printf("\t\t\t\t\t> > Elige una opci%cn: ", 162);
+		option = nument(1);
+		
+		switch (option) {
+			case 1:
+				menuEntrenador();
+				break;
+			case 2:
+				menuServicios();
+				break;
+			case 3:
+				menuRegistro();
+				break;
+			case 4:
+				menuCliente();
+				break;
+			case 5:
+				break;
+			default:
+				system("cls");
+				printf("\n\n\n\n\n\t\t\t\t\tOpci%cn inv%clida. Elige de nuevo.", 162, 160);
+				Sleep(300);
+				break;
+		}
+	} while (option != 5);
 }
+
+
 
 int nument(int lon) {
 	char car, cadena[lon+1]={' '};
