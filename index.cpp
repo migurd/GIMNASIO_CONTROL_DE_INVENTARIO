@@ -56,9 +56,6 @@ int main() {
 		x++;
 		printf("ayuda dios");
 	}while(x<10);
-	for (int i = 0; i <= 10; i++)
-	{
-		printf("dsff\n");
-	}
+
 	return 0;
 }
