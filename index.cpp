@@ -1,8 +1,8 @@
 /* 
 Hecho por:
-Gonz�lez Ram�rez Jos� Manuel
-Qui Mora �ngel Ernesto
-Tirado Romero Juan Jos�
+Gonzalez Ramirez Jose Manuel
+Qui Mora Angel Ernesto
+Tirado Romero Juan Jose
 */
 
 #include <stdio.h>
@@ -49,13 +49,106 @@ struct cliente {
 	int idServicios;
 } cli[10];
 
-int main() {
-	int x;
-	do{
-		printf("holaaaaaaa");
-		x++;
-		printf("ayuda dios");
-	}while(x<10);
+void menu();
+void menuEntrenador();
+void menuServicios();
+void menuRegistro();
+void menuCliente();
 
+int main() {
+	menu();
 	return 0;
+}
+
+void menu() {
+	int option = 0;
+	
+	do {
+		system("cls");
+		printf("\t\t\t\t\t======Men%c principal======\n\n", 163);
+		printf("\t\t\t\t\t1. Men%c entrenador\n", 163);
+		printf("\t\t\t\t\t2. Men%c servicios\n", 163);
+		printf("\t\t\t\t\t3. Men%c registro\n", 163);
+		printf("\t\t\t\t\t4. Men%c cliente\n", 163);
+		printf("\t\t\t\t\t5. Salir\n\n\n", 163);
+		
+		printf("\t\t\t\t\t> > Elige una opci%cn: ", 162);
+		scanf("%i", &option);
+		
+		switch (option) {
+			case 1:
+				menuEntrenador();
+				break;
+			case 2:
+				menuServicios();
+				break;
+			case 3:
+				menuRegistro();
+				break;
+			case 4:
+				menuCliente();
+				break;
+			case 5:
+				system("cls");
+				printf("\n\n\n\n\n\t\t\t\t\t\tCerrando...");
+				Sleep(1000);
+				break;
+			default:
+				system("cls");
+				printf("\n\n\n\n\n\t\t\t\t\tOpci%cn inv%clida. Elige de nuevo.", 162, 160);
+				Sleep(1000);
+				break;
+		}
+	} while (option != 5);
+}
+
+void menuEntrenador() {
+	int option = 0;
+	
+	do {
+		system("cls");
+		printf("\t\t\t\t\t======Men%c entrenador======\n\n", 163);
+		printf("\t\t\t\t\t1. Agregar\n", 163);
+		printf("\t\t\t\t\t2. Consultar\n", 163);
+		printf("\t\t\t\t\t3. Modificar\n", 163);
+		printf("\t\t\t\t\t4. Eliminar\n", 163);
+		printf("\t\t\t\t\t5. Regresar\n\n\n", 163);
+		
+		printf("\t\t\t\t\t> > Elige una opci%cn: ", 162);
+		scanf("%i", &option);
+		
+		switch (option) {
+			case 1:
+				menuEntrenador();
+				break;
+			case 2:
+				menuServicios();
+				break;
+			case 3:
+				menuRegistro();
+				break;
+			case 4:
+				menuCliente();
+				break;
+			case 5:
+				break;
+			default:
+				system("cls");
+				printf("\n\n\n\n\n\t\t\t\t\tOpci%cn inv%clida. Elige de nuevo.", 162, 160);
+				Sleep(300);
+				break;
+		}
+	} while (option != 5);
+}
+
+void menuServicios() {
+	
+}
+
+void menuRegistro() {
+	
+}
+
+void menuCliente() {
+	
 }
