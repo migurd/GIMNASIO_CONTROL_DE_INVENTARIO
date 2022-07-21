@@ -171,12 +171,14 @@ void menuServicios() {
 	
 	do {
 		system("cls");
-		printf("======\tMen%c servicios\t======\n\n", 163);
-		printf("1. Agregar\n", 163);
-		printf("2. Consultar\n", 163);
-		printf("3. Modificar\n", 163);
-		printf("4. Eliminar\n", 163);
-		printf("5. Regresar\n\n\n", 163);
+		printf("\t\t\t\t\t======\tMen%c servicios\t======\n\n", 163);
+		printf("\t\t\t\t\t1. Agregar\n", 163);
+		
+		printf("\t\t\t\t\t2. Consultar\n", 163);
+		
+		printf("\t\t\t\t\t3. Modificar\n", 163);
+		printf("\t\t\t\t\t4. Eliminar\n", 163);
+		printf("\t\t\t\t\t5. Regresar\n\n\n", 163);
 		
 		printf("> > Elige una opci%cn: ", 162);
 		option = nument(1);
