@@ -25,7 +25,7 @@ struct entrenador {
 struct servicios {
 	int id;
 	char servicio[20];
-	int idInstructor;
+	char* idInstructor;
 	char rutina[20];
 } ser[10];
 
@@ -287,6 +287,41 @@ void addEntrenador() {
 
 void addCliente(int idEntrenador, int idServicio) {
 	
+}
+void addservicios() {
+	FILE *fp;
+	char cd;
+	int i;
+	if (fp == NULL) {
+		gotoxy(10, 5);
+		printf("No se pudo abrir el archivo");
+		exit(2);
+	}
+	for (i = 0; i < 10; i++)
+		if (ser[i].id==NULL)
+			break;
+	if (i < 10) {
+		do {
+			system("cls");
+			fp = fopen("./src/Servicios.txt", "a");
+			printf("\t\t\t\t\t======\tA%cadir otro servicio\t======\n\n", 164);
+			printf("\t\t\t\t\tID: %i", i);
+			ser[i].id = i;
+			getch();
+			printf("\n\t\t\t\t\tServicios: ");
+			valitext(15, ser[i].servicio);
+			printf("\n\t\t\t\t\tId del Instructor: ");
+			valitext(15, ser[i].idInstructor);
+			printf("\n\t\t\t\t\tRutina: ");
+			valitext(15, ser[i].rutina);
+			
+			fwrite(&ser, sizeof(struct servicios), 10, fp);
+			fclose(fp);
+			
+			printf("\t\t\t\t\t%cA%cadir otro servicio? (y/n) ", 168, 164);
+			scanf("%s", &cd);
+		} while(cd == 'y' || cd == 'Y');
+	}
 }
 
 int nument(int lon) {
