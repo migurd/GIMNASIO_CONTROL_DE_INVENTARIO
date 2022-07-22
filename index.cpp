@@ -9,46 +9,7 @@ Tirado Romero Juan Jose
 #include <windows.h>
 #include <conio.h>
 
-struct entrenador {
-	int id;
-	char especialidad[15];
-	char primerNombre[15];
-	char segundoNombre[15];
-	char apellidoMaterno[15];
-	char apellidoPaterno[15];
-	char telefono[11];
-	char direccion[20];
-	char turno[11];
-} ent[10]; // Usaremos las 3 primeras letras para todas las estructuras
-
-struct servicios {
-	int id;
-	char servicio[20];
-	char* idInstructor;
-	char rutina[20];
-} ser[10];
-
-struct registro {
-	int id;
-	char fechaRegistro[11];
-	char vigenciaRegistro[11];
-} reg[10];
-
-struct cliente {
-	int id;
-	char primerNombre[15];
-	char segundoNombre[15];
-	char apellidoMaterno[15];
-	char apellidoPaterno[15];
-	char telefono[11];
-	char direccion[20];
-	char turno[11];
-	int idRegistro;
-	int idServicios;
-} cli[10];
-
 void gotoxy(int x,int y);
-
 void menu();
 void menuEntrenador();
 void menuServicios();
@@ -61,13 +22,55 @@ void addCliente(int idEntrenador, int idServicio);
 
 void consultarEntrenador();
 void consultarEntrenadorGeneral();
+void consultarEntrenadorEspecifico();
 
-int nument(int lon);
+char yesOrNo(int length);
+long nument(int lon);
 void valitext(int lon,char *pnom);
 void valifec(char *pfecha);
+void valiTelefono(char *pnom);
+
+struct entrenador {
+	int id;
+	char especialidad[13];
+	char primerNombre[11];
+	char segundoNombre[11];
+	char apellidoMaterno[11];
+	char apellidoPaterno[11];
+	char telefono[11];
+//	char direccion[15];
+	char turno[11];
+} ent[10]; // Usaremos las 3 primeras letras para todas las estructuras
+
+struct servicios {
+	int id;
+	char* idInstructor;
+	char servicio[20];
+	char rutina[20];
+} ser[10];
+
+struct registro {
+	int id;
+	char fechaRegistro[11];
+	char vigenciaRegistro[11];
+} reg[10];
+
+struct cliente {
+	int id;
+	char primerNombre[10];
+	char segundoNombre[10];
+	char apellidoMaterno[10];
+	char apellidoPaterno[10];
+	char telefono[10];
+	char direccion[15];
+	char turno[11];
+	int idRegistro;
+	int idServicios;
+} cli[10];
 
 int main() {
-	menu();
+//	system("COLOR C1");
+	menuEntrenador();
 	return 0;
 }
 
@@ -126,17 +129,17 @@ void menuEntrenador() {
 	do {
 		system("cls");
 		gotoxy(40, 5);
-		printf("======\tMen%c entrenador\t======\n\n", 163);
+		printf("======\tMen%c entrenador\t======", 163);
 		gotoxy(40, 8);
-		printf("1. Agregar\n", 163);
+		printf("1. Agregar", 163);
 		gotoxy(40, 9);
-		printf("2. Consultar\n", 163);
+		printf("2. Consultar", 163);
 		gotoxy(40, 10);
-		printf("3. Modificar\n", 163);
+		printf("3. Modificar", 163);
 		gotoxy(40, 11);
-		printf("4. Eliminar\n", 163);
+		printf("4. Eliminar", 163);
 		gotoxy(40, 12);
-		printf("5. Regresar\n\n\n", 163);
+		printf("5. Regresar", 163);
 		
 		gotoxy(44, 15);
 		printf("> > Elige una opci%cn: ", 162);
@@ -147,13 +150,13 @@ void menuEntrenador() {
 				addEntrenador();
 				break;
 			case 2:
-				consultarEntrenadorGeneral();
+				consultarEntrenador();
 				break;
 			case 3:
-				menuRegistro();
+				
 				break;
 			case 4:
-				menuCliente();
+				
 				break;
 			case 5:
 				break;
@@ -170,40 +173,7 @@ void menuServicios() {
 	int option = 0;
 	
 	do {
-		system("cls");
-		printf("\t\t\t\t\t======\tMen%c servicios\t======\n\n", 163);
-		printf("\t\t\t\t\t1. Agregar\n", 163);
 		
-		printf("\t\t\t\t\t2. Consultar\n", 163);
-		
-		printf("\t\t\t\t\t3. Modificar\n", 163);
-		printf("\t\t\t\t\t4. Eliminar\n", 163);
-		printf("\t\t\t\t\t5. Regresar\n\n\n", 163);
-		
-		printf("> > Elige una opci%cn: ", 162);
-		option = nument(1);
-		
-		switch (option) {
-			case 1:
-				menuEntrenador();
-				break;
-			case 2:
-				menuServicios();
-				break;
-			case 3:
-				menuRegistro();
-				break;
-			case 4:
-				menuCliente();
-				break;
-			case 5:
-				break;
-			default:
-				system("cls");
-				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
-				Sleep(300);
-				break;
-		}
 	} while (option != 5);
 }
 
@@ -215,113 +185,159 @@ void menuCliente() {
 	int option = 0;
 	
 	do {
-		system("cls");
-		printf("======\tMen%c cliente\t======\n\n", 163);
-		printf("1. Agregar\n", 163);
-		printf("2. Consultar\n", 163);
-		printf("3. Modificar\n", 163);
-		printf("4. Eliminar\n", 163);
-		printf("5. Regresar\n\n\n", 163);
 		
-		printf("> > Elige una opci%cn: ", 162);
-		option = nument(1);
-		
-		switch (option) {
-			case 1:
-				menuEntrenador();
-				break;
-			case 2:
-				menuServicios();
-				break;
-			case 3:
-				menuRegistro();
-				break;
-			case 4:
-				menuCliente();
-				break;
-			case 5:
-				break;
-			default:
-				system("cls");
-				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
-				Sleep(300);
-				break;
-		}
 	} while (option != 5);
 }
 
 void addEntrenador() {
 	FILE *fp;
-	char condition;
-	int i;
-		for (i = 0; i < 10; i++)
-		if (ent[i].id==NULL)
+    char option = 'Y';
+    int i;
+    system("cls");
+    fp = fopen("src/entrenadores.txt", "a");
+    if(fp == NULL){
+        gotoxy(10,5);
+        printf("Error abriendo el archivo");
+        exit(1);
+    }
+    fflush(stdin);
+    
+    while(option == 'Y')
+    {
+    	for (i = 0; i < 10; i++)
+    		if (ent[i].id == NULL)
+    			break;
+    	if (i < 10)
+    	{
+	    	gotoxy(15,3);
+	        printf("===\t A%cadir entrenador \t===", 164);
+	        gotoxy(15,5);
+	        printf("Inserta los detalles del entrenador");
+	        gotoxy(15,7);
+	        printf("ID: ");
+	        scanf("%d", &ent[i].id);
+	        fflush(stdin);
+	        gotoxy(15,8);
+	        printf("Especialidad: ");
+	        valitext(12, ent[i].especialidad);
+	        gotoxy(15,9);
+	        printf("Primer nombre: ");
+	        valitext(10, ent[i].primerNombre);
+			gotoxy(15,10);
+	        printf("Segundo nombre: ");
+	        valitext(10, ent[i].segundoNombre);
+	        gotoxy(15,11);
+	        printf("Apellido Paterno: ");
+	        valitext(10, ent[i].apellidoPaterno);
+	        gotoxy(15,12);
+	        printf("Apellido Materno: ");
+	        valitext(10, ent[i].apellidoMaterno);
+			gotoxy(15,13);
+			printf("Tel%cfono: ", 130);
+	        valiTelefono(ent[i].telefono);
+	        fflush(stdin);
+			gotoxy(15,14);
+//			printf("Direcci%cn: ", 162);
+//	        gets(ent[i].direccion);
+//	        gotoxy(15,15);
+			printf("Turno: ", 130);
+	        valitext(10, ent[i].turno);
+	        fwrite(&ent[i], sizeof(ent[i]), 1, fp);
+	        gotoxy(15,16);
+			printf("%cEntrenador a%cadido exitosamente!", 173, 164);
+	        getch();
+			gotoxy(15,18);
+	        printf("%cDesea a%cadir otro entrenador? (Y / N): ", 168, 164);
+	        fflush(stdin);
+	        option = yesOrNo(1);
+	        system("cls");
+	        fflush(stdin);
+		}
+		else {
+			printf("No hay espacio de almacentamiento para entrenadores. :(");
+			getch();
 			break;
-	if (fp == NULL) {
-		gotoxy(10, 5);
-		printf("No se pudo abrir el archivo");
-		exit(1);
-	}
-//		do {
-		system("cls");
-		fp = fopen("./src/entrenadores.txt", "ab+");
-		gotoxy(40, 5);
-		printf("========\tA%cadir entrenador\t========", 164);
-		gotoxy(40, 8);
-		printf("ID: ");
-		scanf("%i", &ent[i].id);
-		fflush(stdin); // Para eliminar el output bugeado cuando se mezcla scanf y gets
-		gotoxy(40, 9);
-		printf("Especialidad: ");
-		gets(ent[i].especialidad);
-		gotoxy(40, 10);
-		printf("Primer nombre: ");
-		gets(ent[i].primerNombre);
-		gotoxy(40, 11);
-		printf("Segundo nombre: ");
-		gets(ent[i].primerNombre);
-		gotoxy(40, 12);
-		printf("Apellido paterno: ");
-		gets(ent[i].apellidoPaterno);
-		gotoxy(40, 13);
-		printf("Apellido materno: ");
-		gets(ent[i].apellidoMaterno);
-		gotoxy(40, 14);
-		printf("Tel%cfono: ", 130);
-		gets(ent[i].telefono);
-		gotoxy(40, 15);
-		printf("Direcci%cn: ", 162);
-		gets(ent[i].direccion);
-		gotoxy(40, 16);
-		printf("Turno: ");
-		gets(ent[i].turno);
-		
-		fwrite(&ent, sizeof(ent), 1, fp);
-		fclose(fp);
+		}
+        
+    }
+    fclose(fp);
+    gotoxy(10,18);
 }
 
 void consultarEntrenador() {
+	int option = 0;
 	
+	do {
+		system("cls");
+		gotoxy(40, 5);
+		printf("======\tMen%c entrenador\t======", 163);
+		gotoxy(40, 8);
+		printf("1. General");
+		gotoxy(40, 9);
+		printf("2. Espec%cfico", 161);
+		gotoxy(40, 10);
+		printf("3. Regresar");
+		
+		gotoxy(44, 15);
+		printf("> > Elige una opci%cn: ", 162);
+		option = nument(1);
+		
+		switch (option) {
+			case 1:
+				consultarEntrenadorGeneral();
+				break;
+			case 2:
+				consultarEntrenadorEspecifico();
+				break;
+			case 3:
+				break;
+			default:
+				system("cls");
+				gotoxy(40, 10);
+				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
+				Sleep(300);
+				break;
+		}
+	} while (option != 3);
 }
 
 void consultarEntrenadorGeneral() {
-	system("cls");
-	int i;
-	gotoxy(40, 1);
-	printf("==== Datos generales de entrenadores ====");
-	gotoxy(5, 8);
-	printf("ID  | Especialidad | Primer nombre | Segundo nombre | Apellido Paterno | Apellido Materno | Telefono | Direccion |  Turno | ");
-	gotoxy(5,10);
-	for (i = 0; ent[i].id != NULL; i++)
-	{
-		
-	}
-	getch();
+	FILE *fp;
+    int i = 0, j;
+    system("cls");
+    gotoxy(10,3);
+    printf("===\t Consulta General Entrenador \t===");
+    gotoxy(10,5);
+    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
+    gotoxy(10,6);
+    printf("____________________________________________________________________________________________");
+    fp = fopen("src/entrenadores.txt","rb+");
+    if(fp == NULL){
+        gotoxy(10,8);
+        printf("Error abriendo el archivo");
+        exit(1);
+    }
+    j=8;
+    while(fread(&ent[i], sizeof(ent[i]), 1, fp) == 1){
+        gotoxy(10, j);
+        printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno);
+        i++;
+        j++;
+    }
+    fclose(fp);
+    gotoxy(10, j+3);
+    printf("Presiona cualquier tecla para salir");
+    getch();
+}
+
+void consultarEntrenadorEspecifico() {
+	
 }
 
 void addCliente(int idEntrenador, int idServicio) {
 	
 }
+
 void addservicios() {
 	FILE *fp;
 	char cd;
@@ -358,7 +374,7 @@ void addservicios() {
 	}
 }
 
-int nument(int lon) {
+long nument(int lon) {
 	char car, cadena[lon+1]={' '};
 	int x=0;
 	do{
@@ -393,7 +409,25 @@ void valitext(int lon,char *pnom){
 	        *(pnom+x)=' ';
         }
     }while(c!=13 && x<lon);
-    *(pnom+x)='\n';
+    *(pnom+x)= NULL;
+}
+
+void valiTelefono(char *pnom){
+	int c=0, x=0;
+    do{
+		c=getch();
+        if(c>=48 && c<=57){
+			printf("%c",c);
+            *(pnom+x)=c;
+            x++;
+        }
+        if(c==8 && x>0){
+			x--;
+		    printf("\b \b");
+	        *(pnom+x)=' ';
+        }
+    }while(x<10);
+    *(pnom+x)= NULL;
 }
 
 void valifec(char *pfecha){
@@ -479,6 +513,26 @@ void valifec(char *pfecha){
 			for(int y=1;y<=10;y++)
 				printf("\b \b");
 	}while(fec!=1);
+}
+
+char yesOrNo(int length) {
+	char car, option;
+	do {
+		car = getch();
+		option = toupper(car);
+		switch (option) {
+			case 89:
+				printf("%c", option);
+				return 'Y';
+				break;
+			case 78:
+				printf("%c", option);
+				return 'N';
+				break;
+			default:
+				break;
+		} 
+	} while(option != 89 || option != 78);
 }
 
 void gotoxy(int x,int y) {
