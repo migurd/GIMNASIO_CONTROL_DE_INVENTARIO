@@ -305,7 +305,7 @@ void consultarEntrenadorGeneral() {
 	FILE *fp;
     int i = 0, j;
     system("cls");
-    gotoxy(10,3);
+    gotoxy(36,2);
     printf("===\t Consulta General Entrenador \t===");
     gotoxy(10,5);
     printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
@@ -331,7 +331,38 @@ void consultarEntrenadorGeneral() {
 }
 
 void consultarEntrenadorEspecifico() {
-	
+	int cod;
+	int i=0;
+	char option='Y';
+	FILE *fp;
+	while(option == 'Y'){
+		system("cls");
+		gotoxy(38,2);
+	    printf("=== Consulta Especifica Entrenador ===");
+	    gotoxy(38,5);
+		printf("ID del Entrenador: ");
+		scanf("%i",&cod);
+		system("cls");
+		gotoxy(38,2);
+	    printf("=== Consulta Especifica Entrenador ===");
+	    gotoxy(10,5);
+	    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
+	    gotoxy(10,6);
+	    printf("____________________________________________________________________________________________");
+		fp = fopen("src/entrenadores.txt","rb+");
+		while(!feof(fp)){
+			fread(&ent[i],sizeof(ent[i]),1,fp);
+			if(cod==ent[i].id){
+				gotoxy(10, 8);
+	        	printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno);
+				getch();
+				gotoxy(10,12);
+		        printf("%cDesea buscar otro entrenador? (Y / N): ", 168, 164);
+		        option = yesOrNo(1);
+				break;
+			}
+		}
+	}
 }
 
 void addCliente(int idEntrenador, int idServicio) {
