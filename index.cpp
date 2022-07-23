@@ -26,12 +26,12 @@ void consultarEntrenadorEspecifico();
 
 void modificarEntrenador();
 
-int intcmp(int value, int i, int top, char arr[]);
+int verifyPosition(char *arr, int id, int i);
 char yesOrNo(int length);
 long nument(int lon);
 void valitext(int lon,char *pnom);
 void valifec(char *pfecha);
-void valiTelefono(char *pnom);
+void valiNum(char *pnom, int length);
 
 struct entrenador {
 	int id;
@@ -156,7 +156,7 @@ void menuEntrenador() {
 				consultarEntrenador();
 				break;
 			case 3:
-				
+				modificarEntrenador();
 				break;
 			case 4:
 				
@@ -218,7 +218,7 @@ void addEntrenador() {
 	        printf("Inserta los detalles del entrenador");
 	        gotoxy(15,7);
 	        printf("ID: ");
-	        scanf("%d", &ent[i].id);
+	        ent[i].id = nument(3);
 	        fflush(stdin);
 	        gotoxy(15,8);
 	        printf("Especialidad: ");
@@ -237,7 +237,7 @@ void addEntrenador() {
 	        valitext(10, ent[i].apellidoMaterno);
 			gotoxy(15,13);
 			printf("Tel%cfono: ", 130);
-	        valiTelefono(ent[i].telefono);
+	        valiNum(ent[i].telefono, 10);
 	        fflush(stdin);
 			gotoxy(15,14);
 //			printf("Direcci%cn: ", 162);
@@ -308,7 +308,7 @@ void consultarEntrenadorGeneral() {
 	FILE *fp;
     int i = 0, j;
     system("cls");
-    gotoxy(10,3);
+    gotoxy(36,2);
     printf("===\t Consulta General Entrenador \t===");
     gotoxy(10,5);
     printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
@@ -334,29 +334,63 @@ void consultarEntrenadorGeneral() {
 }
 
 void consultarEntrenadorEspecifico() {
-	
+	int cod;
+	int i=0;
+	char option='Y';
+	FILE *fp;
+	while(option == 'Y'){
+		system("cls");
+		gotoxy(38,2);
+	    printf("=== Consulta Especifica Entrenador ===");
+	    gotoxy(38,5);
+		printf("ID del Entrenador: ");
+		cod = nument(3);
+		system("cls");
+		gotoxy(38,2);
+	    printf("=== Consulta Especifica Entrenador ===");
+	    gotoxy(10,5);
+	    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
+	    gotoxy(10,6);
+	    printf("____________________________________________________________________________________________");
+		fp = fopen("src/entrenadores.txt","rb+");
+		while(!feof(fp)){
+			fread(&ent[i],sizeof(ent[i]),1,fp);
+			if(cod==ent[i].id){
+				gotoxy(10, 8);
+	        	printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno);
+				getch();
+				gotoxy(10,12);
+		        printf("%cDesea buscar otro entrenador? (Y / N): ", 168, 164);
+		        option = yesOrNo(1);
+				break;
+			}
+		}
+	}
 }
 
 void modificarEntrenador() {
     system("cls");
     FILE *fp;
+    char option = 'Y';
 	char idEntrenador;
 	int i;
     gotoxy(10,3);
     printf("===\t Modificar Entrenador \t===");
     gotoxy(10,5);
     printf("Inserta la ID de entrenador a modificar: ");
-    scanf("%i", &idEntrenador);
+    idEntrenador = nument(3);
     fp = fopen("src/entrenadores.txt","rb+");
     if(fp == NULL) {
         gotoxy(10,6);
         printf("Error abriendo el archivo");
         exit(1);
     }
-    i = intcmp(idEntrenador, 0, 10, ent[]);
+    for (i = 0; i < 10; i++) // Quizás hacer función
+    	if(ent[i].id == idEntrenador)
+    		break;
     while(fread(&ent[i], sizeof(ent[i]), 1, fp) == 1)
     {
-        if() {
+        if(ent[i].id == idEntrenador) {
             gotoxy(15,8);
 	        printf("Especialidad: ");
 	        valitext(12, ent[i].especialidad);
@@ -374,7 +408,7 @@ void modificarEntrenador() {
 	        valitext(10, ent[i].apellidoMaterno);
 			gotoxy(15,13);
 			printf("Tel%cfono: ", 130);
-	        valiTelefono(ent[i].telefono);
+	        valiNum(ent[i].telefono, 10);
 	        fflush(stdin);
 			gotoxy(15,14);
 			printf("Turno: ", 130);
@@ -385,17 +419,22 @@ void modificarEntrenador() {
 	        fflush(stdin);
 	        option = yesOrNo(1);
 			gotoxy(15,18);
-			printf("%cEntrenador modificado exitosamente!", 173);
-	        getch();
-            fseek(fp , -sizeof(ent[i]), SEEK_CUR);
-            fwrite(&ent[i], sizeof(ent[i]), 1, fp);
+			if(option == 'Y')
+			{
+				printf("%cEntrenador modificado exitosamente!", 173);
+            	fseek(fp , -sizeof(ent[i]), SEEK_CUR); // Investigar qué hace esto
+            	fwrite(&ent[i], sizeof(ent[i]), 1, fp);
+	        	getch();
+			}
+			else {
+				printf("No se hizo ning%cn cambio", 163);
+	        	getch();
+			}
             break;
         }
     }
     fclose(fp);
     gotoxy(15,20);
-    printf("Presiona cualquier tecla para salir");
-    getch();
 }
 
 void addCliente(int idEntrenador, int idServicio) {
@@ -476,7 +515,7 @@ void valitext(int lon,char *pnom){
     *(pnom+x)= NULL;
 }
 
-void valiTelefono(char *pnom){
+void valiNum(char *pnom, int length){
 	int c=0, x=0;
     do{
 		c=getch();
@@ -490,7 +529,7 @@ void valiTelefono(char *pnom){
 		    printf("\b \b");
 	        *(pnom+x)=' ';
         }
-    }while(x<10);
+    }while(x<length);
     *(pnom+x)= NULL;
 }
 
@@ -599,12 +638,6 @@ char yesOrNo(int length) {
 	} while(option != 89 || option != 78);
 }
 
-int intcmp(int value, int i, int top, char arr[]) {
-	// i = length
-	for (i = 0; i < top; i++)
-		if (value == arr[i])
-			return value;
-}
 
 void gotoxy(int x,int y) {
         COORD c;
@@ -612,3 +645,11 @@ void gotoxy(int x,int y) {
         c.Y=y;
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),c);
 }
+
+/* int verifyPosition(char *arr, int id, int i) { // Experimento que salió mal
+	if (*(arr+i) == id)
+		return id;
+	else if (i == 10)
+		return 0;
+	return(arr, id, i+1);
+} */
