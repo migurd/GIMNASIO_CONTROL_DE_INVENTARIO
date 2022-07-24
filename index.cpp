@@ -16,8 +16,8 @@ void menuServicios();
 void menuRegistro();
 void menuCliente();
 
-void leerArchivoEntrenador(void);
-void guardarArchivoEntrenador(void);
+void leerArchivoEntrenador();
+void guardarArchivoEntrenador();
 
 void addEntrenador();
 void addServicios(int idEntrenador);
@@ -33,6 +33,8 @@ void eliminarEntrenador();
 
 void displayEntrenador(int p, int y);
 
+int idRepetida(struct entrenador ent[], int idWanted);
+int firstNull(struct entrenador ent[], int i);
 int idPosition(struct entrenador ent[], int idWanted, int i, int top);
 char yesOrNo(int length);
 long nument(int lon);
@@ -204,22 +206,21 @@ void addEntrenador() {
 	FILE *fp;
     char option = 'Y';
     int i;
-    system("cls");
-    fp = fopen("src/entrenadores.txt", "ab+");
-    if(fp == NULL){
-        gotoxy(10,5);
-        printf("Error abriendo el archivo");
-        exit(1);
-    }
     
     while(option == 'Y')
     {
+    	system("cls");
     	for (i = 0; i < 10; i++)
     		if (ent[i].id == NULL)
     			break;
-    	fflush(stdin);
-    	if (i < 10 || ent[9].id == NULL) // La condición la hace válida solamente cuando se consulta
+    	if (i < 10) // La condición la hace válida solamente cuando se consulta
     	{
+		    fp = fopen("src/entrenadores.txt", "ab+");
+		    if(fp == NULL){
+		        gotoxy(10,5);
+		        printf("Error abriendo el archivo");
+		        exit(1);
+		    }
     		/*printf("%i", ent[9].id);
     		getch(); */
 	    	gotoxy(15,3);
@@ -230,6 +231,8 @@ void addEntrenador() {
 	        printf("ID: ");
 	        ent[i].id = nument(3);
 	        fflush(stdin);
+//	        if(idRepetida(ent, ent[i].id) != ent[i].id)
+//	        	ent[i].id = idRepetida(ent, ent[i].id);
 	        gotoxy(15,8);
 	        printf("Especialidad: ");
 	        valitext(12, ent[i].especialidad);
@@ -263,14 +266,13 @@ void addEntrenador() {
 	        printf("%cDesea a%cadir otro entrenador? (Y / N): ", 168, 164);
 	        fflush(stdin);
 	        option = yesOrNo(1);
-	        system("cls");
-	        fflush(stdin);
+	        fclose(fp);
 		}
 		else {
 			printf("No hay espacio de almacentamiento para m%cs entrenadores. :(", 160);
 			getch();
+			return;
 		}
-        
     }
     fclose(fp);
     
@@ -377,6 +379,7 @@ void consultarEntrenadorEspecifico() {
 		        printf("%cDesea buscar otro entrenador? (Y / N): ", 168, 164);
 		        option = yesOrNo(1);
 		        condition = 0;
+		        fclose(fp); // ALGO CLAVE ERA QUE CERRARAN ESTOS
 				break;
 			}
 		}
@@ -388,6 +391,7 @@ void consultarEntrenadorEspecifico() {
 			printf("%cDesea buscar otro entrenador para consultar? (Y / N): ", 168, 164);
 			fflush(stdin);
 			option = yesOrNo(1);
+			fclose(fp); // ALGO CLAVE ERA QUE CERRARAN ESTOS
 			if (option == 'N')
 				break;
 		}
@@ -428,8 +432,10 @@ void modificarEntrenador() {
 		while(idEntrenador == ent[p].id)
 	    {
 	    	system("cls");
-	    	if (option != 'Y')
-	    		break;
+	    	if (option == 'N') {
+	    		fclose(fp);
+				break;
+			}
 	        if(idEntrenador == ent[p].id) {
 	        	displayEntrenador(p, 2);
 	            gotoxy(10,8);
@@ -462,7 +468,8 @@ void modificarEntrenador() {
 				if(option == 'Y')
 				{
 					printf("%cEntrenador modificado exitosamente!", 173);
-            		fwrite(&ent[p], sizeof(ent[p]), 1, fp); // Reemplaza el primer lugar con la modificación, nada más || BUGGG
+					fseek(fp,-sizeof(ent), SEEK_CUR);
+            		fwrite(&ent,sizeof(ent), 1, fp);
 				}
 				else {
 					printf("No se hizo ning%cn cambio", 163);
@@ -470,7 +477,8 @@ void modificarEntrenador() {
 		        getch();
 				condition = 0;
 				option = 'N';
-	            break;
+				fclose(fp);
+	            return;
 	        }
 	    }
 	    fclose(fp);
@@ -485,7 +493,7 @@ void modificarEntrenador() {
 			fflush(stdin);
 			option = yesOrNo(1);
 			if (option == 'N')
-				break;
+				return;
 		}
 		condition = 1;
 	}while (option == 'Y');
@@ -498,20 +506,6 @@ void eliminarEntrenador() {
 	int condition = 1;
     FILE *fp,*temp;
     do {
-	    fp = fopen("src/entrenadores.txt","rb+");
-	    if(fp == NULL){
-	        gotoxy(10,6);
-	        printf("Error al abrir el archivo");
-	        exit(1);
-	    }
-	    temp = fopen("src/temporal.txt","wb+");
-	    if(temp == NULL) {
-	        gotoxy(10,6);
-	        printf("Error al abrir el archivo");
-	        exit(1);
-    	}
-    	if (condition == 0)
-    		break;
 	    system("cls");
 		gotoxy(10,3);
 	    printf("=== Eliminar entrenador ===");
@@ -525,19 +519,27 @@ void eliminarEntrenador() {
 	    getch();*/
 	    while (id == ent[p].id && option == 'Y')
 	    {
+		    fp = fopen("src/entrenadores.txt","rb+");
+		    if(fp == NULL){
+		        gotoxy(10,6);
+		        printf("Error al abrir el archivo");
+		        exit(1);
+		    }
+		    temp = fopen("src/temporal.txt","wb+");
+		    if(temp == NULL) {
+		        gotoxy(10,6);
+		        printf("Error al abrir el archivo");
+		        exit(1);
+	    	}
 	    	displayEntrenador(p, 5);
 			gotoxy(10,12);
 			printf("%cEst%c seguro que quiere eliminar el usuario con la ID `%i`? (Y / N): ", 168, 160, id);
 		    fflush(stdin);
 		    option = yesOrNo(1);
-		    for (i = 0; i < 10; i++) {
-		    	while(fread(&ent[i],sizeof(ent[i]),1,fp) == 1) {
+		    for (i = 0; i < 10; i++)
+		    	while(fread(&ent[i],sizeof(ent[i]),1,fp) == 1)
 		    		if(id != ent[i].id)
-			    	{
 			    		fwrite(&ent[i],sizeof(ent[i]),1,temp);
-					}
-				}
-			}
 			fclose(fp);
 		    fclose(temp);
 			gotoxy(10,14);
@@ -550,10 +552,9 @@ void eliminarEntrenador() {
 			else {
 				remove("src/temporal.txt");
 				printf("No se hizo ning%cn cambio", 163);
-				}
-			condition = 0;
-		  	getch();
-			break;
+			}
+			getch();
+			return;
 		}
 		if (condition == 1)
 		{
@@ -565,10 +566,9 @@ void eliminarEntrenador() {
 			fflush(stdin);
 			option = yesOrNo(1);
 			if (option == 'N')
-				break;
+				return;
 		}
 	} while (option == 'Y');
-	
 }
 	
 void displayEntrenador(int p, int y) {
@@ -589,7 +589,7 @@ void addServicios(int idEntrenador) {
 	
 }
 
-void leerArchivoEntrenador(void){
+void leerArchivoEntrenador(){
     FILE *pEnt;
     pEnt=fopen("src/entrenadores.txt","a+");
     if(pEnt == NULL){
@@ -598,24 +598,65 @@ void leerArchivoEntrenador(void){
     }
     else{
         if(!feof(pEnt)){                              //FIN DEL ARCHIVO (feof) FileEndOfFile?
-            fread(&ent,sizeof(struct entrenador),10,pEnt);
+            fread(&ent,sizeof(ent),firstNull(ent, 0),pEnt);
         }
         fclose(pEnt);
     }
-
 }
 
-void guardarArchivoEntrenador(void) {
-    FILE *pEnt;
+void guardarArchivoEntrenador() {
+	/* // The CODE bugs with this, better not add it, yes I'm telling to you, you babosin
+	FILE *pEnt;
+	FILE *temp;
+	int i = 0;
+	pEnt=fopen("src/entrenadores.txt","rb+");
+	if(pEnt == NULL){
+		printf("ARCHIVO NO CREADO/ABIERTO");
+		getch();
+	}
+	temp=fopen("src/temporal.txt","wb+");
+	if(pEnt == NULL){
+		printf("ARCHIVO NO CREADO/ABIERTO");
+		getch();
+	}
+	else{
+		for (i = 0; i < (firstNull(ent, 0)); i++)
+		  	while(fread(&ent[i],sizeof(ent[i]),1,pEnt) == 1)
+		    	fwrite(&ent[i],sizeof(ent[i]),1,temp);
+		remove("src/entrenadores.txt");
+		rename("src/temporal.txt", "src/entrenadores.txt");
+		}
+		fclose(pEnt);
+		fclose(temp);
+		*/
+}
+
+int idRepetida(struct entrenador ent[], int idWanted) { 
+	FILE *pEnt;
+	int i;
+	int j = 0;
     pEnt=fopen("src/entrenadores.txt","a+");
     if(pEnt == NULL){
         printf("ARCHIVO NO CREADO/ABIERTO");
         getch();
     }
     else{
-            fclose(pEnt);
-        }
- }
+        for (i = 0; i < 10; i++) {
+        	if (ent[i].id == idWanted) {
+    			fclose(pEnt);
+				return idRepetida(ent, j+1); // En caso de ser repetida, manda la ID desocupada más baja posible
+			}
+		fclose(pEnt);
+		return idWanted; // No se repitió la ID
+		}
+    }
+}
+
+int firstNull(struct entrenador ent[], int i) {
+	if (ent[i].id == NULL)
+		return i+1;
+	return firstNull(ent, i+1);
+}
 
 long nument(int lon) {
 	char car, cadena[lon+1]={' '};
@@ -627,13 +668,19 @@ long nument(int lon) {
 			cadena[x]=car;
 			x++;
 		}
+		if (car == 48 && x == 1) {
+			printf("\b \b");
+			x--;
+			cadena[x]=' ';
+		}
 		if(car==8 && x>0){
 			printf("\b \b");
 			x--;
 			cadena[x]=' ';
 		}
-	}while(car != 13 && x < lon);
+	}while((car != 13 || x == 0) && x < lon);
 	cadena[x]='\n';
+	
 	return atoi(cadena);
 }
 
