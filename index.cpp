@@ -16,6 +16,9 @@ void menuServicios();
 void menuRegistro();
 void menuCliente();
 
+void leerArchivoEntrenador(void);
+void guardarArchivoEntrenador(void);
+
 void addEntrenador();
 void addServicios(int idEntrenador);
 void addCliente(int idEntrenador, int idServicio);
@@ -151,7 +154,7 @@ void menuEntrenador() {
 		gotoxy(44, 15);
 		printf("> > Elige una opci%cn: ", 162);
 		option = nument(1);
-		
+		leerArchivoEntrenador();
 		switch (option) {
 			case 1:
 				addEntrenador();
@@ -173,6 +176,7 @@ void menuEntrenador() {
 				Sleep(300);
 				break;
 		}
+		guardarArchivoEntrenador();
 	} while (option != 5);
 }
 
@@ -584,6 +588,34 @@ void addCliente(int idEntrenador, int idServicio) {
 void addServicios(int idEntrenador) {
 	
 }
+
+void leerArchivoEntrenador(void){
+    FILE *pEnt;
+    pEnt=fopen("src/entrenadores.txt","a+");
+    if(pEnt == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        getch();
+    }
+    else{
+        if(!feof(pEnt)){                              //FIN DEL ARCHIVO (feof) FileEndOfFile?
+            fread(&ent,sizeof(struct entrenador),10,pEnt);
+        }
+        fclose(pEnt);
+    }
+
+}
+
+void guardarArchivoEntrenador(void) {
+    FILE *pEnt;
+    pEnt=fopen("src/entrenadores.txt","a+");
+    if(pEnt == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        getch();
+    }
+    else{
+            fclose(pEnt);
+        }
+ }
 
 long nument(int lon) {
 	char car, cadena[lon+1]={' '};
