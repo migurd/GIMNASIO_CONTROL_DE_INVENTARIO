@@ -26,7 +26,11 @@ void consultarEntrenadorEspecifico();
 
 void modificarEntrenador();
 
-int verifyPosition(char *arr, int id, int i);
+void eliminarEntrenador();
+
+void displayEntrenador(int p, int y);
+
+int idPosition(struct entrenador ent[], int idWanted, int i, int top);
 char yesOrNo(int length);
 long nument(int lon);
 void valitext(int lon,char *pnom);
@@ -159,7 +163,7 @@ void menuEntrenador() {
 				modificarEntrenador();
 				break;
 			case 4:
-				
+				eliminarEntrenador();
 				break;
 			case 5:
 				break;
@@ -197,21 +201,23 @@ void addEntrenador() {
     char option = 'Y';
     int i;
     system("cls");
-    fp = fopen("src/entrenadores.txt", "a");
+    fp = fopen("src/entrenadores.txt", "ab+");
     if(fp == NULL){
         gotoxy(10,5);
         printf("Error abriendo el archivo");
         exit(1);
     }
-    fflush(stdin);
     
     while(option == 'Y')
     {
     	for (i = 0; i < 10; i++)
     		if (ent[i].id == NULL)
     			break;
-    	if (i < 10)
+    	fflush(stdin);
+    	if (i < 10 || ent[9].id == NULL) // La condición la hace válida solamente cuando se consulta
     	{
+    		/*printf("%i", ent[9].id);
+    		getch(); */
 	    	gotoxy(15,3);
 	        printf("===\t A%cadir entrenador \t===", 164);
 	        gotoxy(15,5);
@@ -259,12 +265,11 @@ void addEntrenador() {
 		else {
 			printf("No hay espacio de almacentamiento para m%cs entrenadores. :(", 160);
 			getch();
-			break;
 		}
         
     }
     fclose(fp);
-    gotoxy(10,18);
+    
 }
 
 void consultarEntrenador() {
@@ -302,6 +307,7 @@ void consultarEntrenador() {
 				break;
 		}
 	} while (option != 3);
+	
 }
 
 void consultarEntrenadorGeneral() {
@@ -311,9 +317,9 @@ void consultarEntrenadorGeneral() {
     gotoxy(36,2);
     printf("===\t Consulta General Entrenador \t===");
     gotoxy(10,5);
-    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
+    printf("ID   Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
     gotoxy(10,6);
-    printf("____________________________________________________________________________________________");
+    printf("_______________________________________________________________________________________________");
     fp = fopen("src/entrenadores.txt","rb+");
     if(fp == NULL){
         gotoxy(10,8);
@@ -323,7 +329,7 @@ void consultarEntrenadorGeneral() {
     j=8;
     while(fread(&ent[i], sizeof(ent[i]), 1, fp) == 1){
         gotoxy(10, j);
-        printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno);
+        printf("%-5d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno);
         i++;
         j++;
     }
@@ -331,13 +337,17 @@ void consultarEntrenadorGeneral() {
     gotoxy(10, j+3);
     printf("Presiona cualquier tecla para salir");
     getch();
+    
 }
 
 void consultarEntrenadorEspecifico() {
 	int cod;
-	int i=0;
+	int p; // p = position
+	int i = 0;
+	int condition = 1;
 	char option='Y';
 	FILE *fp;
+	p = idPosition(ent, cod, 0, 10); 
 	while(option == 'Y'){
 		system("cls");
 		gotoxy(38,2);
@@ -345,136 +355,234 @@ void consultarEntrenadorEspecifico() {
 	    gotoxy(38,5);
 		printf("ID del Entrenador: ");
 		cod = nument(3);
-		system("cls");
-		gotoxy(38,2);
-	    printf("=== Consulta Especifica Entrenador ===");
-	    gotoxy(10,5);
-	    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
-	    gotoxy(10,6);
-	    printf("____________________________________________________________________________________________");
 		fp = fopen("src/entrenadores.txt","rb+");
-		while(!feof(fp)){
+		while(!feof(fp)){ // Avanza al siguiente ent[i] si el anterior no está presente
 			fread(&ent[i],sizeof(ent[i]),1,fp);
 			if(cod==ent[i].id){
+				system("cls");
+				gotoxy(38,2);
+			    printf("=== Consulta Especifica Entrenador ===");
+			    gotoxy(10,5);
+			    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
+			    gotoxy(10,6);
+			    printf("____________________________________________________________________________________________");
 				gotoxy(10, 8);
 	        	printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno);
 				getch();
 				gotoxy(10,12);
 		        printf("%cDesea buscar otro entrenador? (Y / N): ", 168, 164);
 		        option = yesOrNo(1);
+		        condition = 0;
 				break;
 			}
 		}
+		if (p == NULL && condition == 1) {
+			system("cls");
+			gotoxy(10,4);
+			printf("La ID `%i` no se encuentra registrada.", cod);
+			gotoxy(10,5);
+			printf("%cDesea buscar otro entrenador para consultar? (Y / N): ", 168, 164);
+			fflush(stdin);
+			option = yesOrNo(1);
+			if (option == 'N')
+				break;
+		}
+		condition = 1;
 	}
+	fclose(fp);
+	
 }
 
 void modificarEntrenador() {
-    system("cls");
     FILE *fp;
     char option = 'Y';
-	char idEntrenador;
-	int i;
-    gotoxy(10,3);
-    printf("===\t Modificar Entrenador \t===");
-    gotoxy(10,5);
-    printf("Inserta la ID de entrenador a modificar: ");
-    idEntrenador = nument(3);
-    fp = fopen("src/entrenadores.txt","rb+");
-    if(fp == NULL) {
-        gotoxy(10,6);
-        printf("Error abriendo el archivo");
-        exit(1);
-    }
-    for (i = 0; i < 10; i++) // Quizás hacer función
-    	if(ent[i].id == idEntrenador)
+	int idEntrenador; // Esto era char antes, daba 89 en vez de 344 LMAO
+	int i = 0, p = 0;
+	int condition = 1;
+	do {
+		system("cls");
+		gotoxy(10,3);
+	    printf("===\t Modificar Entrenador \t===");
+	    gotoxy(10,5);
+	    printf("Inserta la ID de entrenador a modificar: ");
+	    idEntrenador = nument(3);
+	    fp = fopen("src/entrenadores.txt","rb+");
+	    if(fp == NULL) {
+	        gotoxy(10,6);
+	        printf("Error abriendo el archivo");
+	        exit(1);
+	    }
+	    p = idPosition(ent, idEntrenador, 0, 10);
+	    if (ent[p].id == idEntrenador)
+	    {
+	    	displayEntrenador(p, 7);
+		    gotoxy(10,14);
+			printf("%cEst%c seguro que quiere editar el usuario con la ID `%i`? (Y / N): ", 168, 160, idEntrenador);
+		    fflush(stdin);
+		    option = yesOrNo(1);
+		}
+		while(idEntrenador == ent[p].id)
+	    {
+	    	system("cls");
+	    	if (option != 'Y')
+	    		break;
+	        if(idEntrenador == ent[p].id) {
+	        	displayEntrenador(p, 2);
+	            gotoxy(10,8);
+		        printf("Especialidad: ");
+		        valitext(12, ent[p].especialidad);
+		        gotoxy(10,9);
+		        printf("Primer nombre: ");
+		        valitext(10, ent[p].primerNombre);
+				gotoxy(10,10);
+		        printf("Segundo nombre: ");
+		        valitext(10, ent[p].segundoNombre);
+		        gotoxy(10,11);
+		        printf("Apellido Paterno: ");
+		        valitext(10, ent[p].apellidoPaterno);
+		        gotoxy(10,12);
+		        printf("Apellido Materno: ");
+		        valitext(10, ent[p].apellidoMaterno);
+				gotoxy(10,13);
+				printf("Tel%cfono: ", 130);
+		        valiNum(ent[p].telefono, 10);
+		        fflush(stdin);
+				gotoxy(10,14);
+				printf("Turno: ", 130);
+		        valitext(10, ent[p].turno);
+		        gotoxy(10,16);
+		        printf("%cDesea guardar los cambios? (Y / N): ", 168);
+		        fflush(stdin);
+		        option = yesOrNo(1);
+				gotoxy(10,18);
+				if(option == 'Y')
+				{
+					printf("%cEntrenador modificado exitosamente!", 173);
+            		fwrite(&ent[p], sizeof(ent[p]), 1, fp); // Reemplaza el primer lugar con la modificación, nada más || BUGGG
+				}
+				else {
+					printf("No se hizo ning%cn cambio", 163);
+				}
+		        getch();
+				condition = 0;
+				option = 'N';
+	            break;
+	        }
+	    }
+	    fclose(fp);
+	    
+    	if (condition == 1 && option == 'Y')
+    	{
+    		system("cls");
+			gotoxy(10,4);
+			printf("La ID `%i` no se encuentra registrada.", idEntrenador);
+			gotoxy(10,5);
+			printf("%cDesea buscar otro entrenador para eliminar? (Y / N): ", 168, 164);
+			fflush(stdin);
+			option = yesOrNo(1);
+			if (option == 'N')
+				break;
+		}
+		condition = 1;
+	}while (option == 'Y');
+    
+}
+
+void eliminarEntrenador() {
+	int id, i, p; // P = position
+	char option = 'Y';
+	int condition = 1;
+    FILE *fp,*temp;
+    do {
+	    fp = fopen("src/entrenadores.txt","rb+");
+	    if(fp == NULL){
+	        gotoxy(10,6);
+	        printf("Error al abrir el archivo");
+	        exit(1);
+	    }
+	    temp = fopen("src/temporal.txt","wb+");
+	    if(temp == NULL) {
+	        gotoxy(10,6);
+	        printf("Error al abrir el archivo");
+	        exit(1);
+    	}
+    	if (condition == 0)
     		break;
-    while(fread(&ent[i], sizeof(ent[i]), 1, fp) == 1)
-    {
-        if(ent[i].id == idEntrenador) {
-            gotoxy(15,8);
-	        printf("Especialidad: ");
-	        valitext(12, ent[i].especialidad);
-	        gotoxy(15,9);
-	        printf("Primer nombre: ");
-	        valitext(10, ent[i].primerNombre);
-			gotoxy(15,10);
-	        printf("Segundo nombre: ");
-	        valitext(10, ent[i].segundoNombre);
-	        gotoxy(15,11);
-	        printf("Apellido Paterno: ");
-	        valitext(10, ent[i].apellidoPaterno);
-	        gotoxy(15,12);
-	        printf("Apellido Materno: ");
-	        valitext(10, ent[i].apellidoMaterno);
-			gotoxy(15,13);
-			printf("Tel%cfono: ", 130);
-	        valiNum(ent[i].telefono, 10);
-	        fflush(stdin);
-			gotoxy(15,14);
-			printf("Turno: ", 130);
-	        valitext(10, ent[i].turno);
-	        fwrite(&ent[i], sizeof(ent[i]), 1, fp);
-	        gotoxy(15,16);
-	        printf("%cDesea guardar los cambios? (Y / N): ", 168);
-	        fflush(stdin);
-	        option = yesOrNo(1);
-			gotoxy(15,18);
+	    system("cls");
+		gotoxy(10,3);
+	    printf("=== Eliminar entrenador ===");
+	    gotoxy(10,5);
+	    printf("Insertar la ID a eliminar: ");
+	    id = nument(3);
+	    fflush(stdin); // Se bugea sin esto
+	    p = idPosition(ent, id, 0, 10);
+	    /*printf("\n%i", id);
+	    printf("\n%i", ent[p].id);
+	    getch();*/
+	    while (id == ent[p].id && option == 'Y')
+	    {
+	    	displayEntrenador(p, 5);
+			gotoxy(10,12);
+			printf("%cEst%c seguro que quiere eliminar el usuario con la ID `%i`? (Y / N): ", 168, 160, id);
+		    fflush(stdin);
+		    option = yesOrNo(1);
+		    for (i = 0; i < 10; i++) {
+		    	while(fread(&ent[i],sizeof(ent[i]),1,fp) == 1) {
+		    		if(id != ent[i].id)
+			    	{
+			    		fwrite(&ent[i],sizeof(ent[i]),1,temp);
+					}
+				}
+			}
+			fclose(fp);
+		    fclose(temp);
+			gotoxy(10,14);
 			if(option == 'Y')
-			{
-				printf("%cEntrenador modificado exitosamente!", 173);
-            	fseek(fp , -sizeof(ent[i]), SEEK_CUR); // Investigar qué hace esto
-            	fwrite(&ent[i], sizeof(ent[i]), 1, fp);
-	        	getch();
+			{	
+			    remove("src/entrenadores.txt");
+			    rename("src/temporal.txt", "src/entrenadores.txt");
+			    printf("%cEntrenador con la ID `%i` eliminado exitosamente!", 173, id);
 			}
 			else {
+				remove("src/temporal.txt");
 				printf("No se hizo ning%cn cambio", 163);
-	        	getch();
-			}
-            break;
-        }
-    }
-    fclose(fp);
-    gotoxy(15,20);
+				}
+			condition = 0;
+		  	getch();
+			break;
+		}
+		if (condition == 1)
+		{
+			system("cls");
+			gotoxy(10,4);
+			printf("La ID `%i` no se encuentra registrada.", id);
+			gotoxy(10,5);
+			printf("%cDesea buscar otro entrenador para eliminar? (Y / N): ", 168, 164);
+			fflush(stdin);
+			option = yesOrNo(1);
+			if (option == 'N')
+				break;
+		}
+	} while (option == 'Y');
+	
+}
+	
+void displayEntrenador(int p, int y) {
+	// y representa la parte de Gotoxy para que baje
+	gotoxy(10,y);
+	printf("ID   Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
+	gotoxy(10,y+1);
+	printf("_______________________________________________________________________________________________");
+	gotoxy(10, y+3);
+	printf("%-5d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[p].id, ent[p].especialidad, ent[p].primerNombre, ent[p].segundoNombre, ent[p].apellidoPaterno, ent[p].apellidoMaterno, ent[p].telefono, ent[p].turno);
 }
 
 void addCliente(int idEntrenador, int idServicio) {
 	
 }
 
-void addservicios() {
-	FILE *fp;
-	char cd;
-	int i;
-	if (fp == NULL) {
-		gotoxy(10, 5);
-		printf("No se pudo abrir el archivo");
-		exit(1);
-	}
-	for (i = 0; i < 10; i++)
-		if (ser[i].id==NULL)
-			break;
-	if (i < 10) {
-		do {
-			system("cls");
-			fp = fopen("./src/Servicios.txt", "a");
-			printf("\t\t\t\t\t======\tA%cadir otro servicio\t======\n\n", 164);
-			printf("\t\t\t\t\tID: %i", i);
-			ser[i].id = i;
-			getch();
-			printf("\n\t\t\t\t\tServicios: ");
-			valitext(15, ser[i].servicio);
-			printf("\n\t\t\t\t\tId del Instructor: ");
-			valitext(15, ser[i].idInstructor);
-			printf("\n\t\t\t\t\tRutina: ");
-			valitext(15, ser[i].rutina);
-			
-			fwrite(&ser, sizeof(struct servicios), 10, fp);
-			fclose(fp);
-			
-			printf("\t\t\t\t\t%cA%cadir otro servicio? (y/n) ", 168, 164);
-			scanf("%s", &cd);
-		} while(cd == 'y' || cd == 'Y');
-	}
+void addServicios(int idEntrenador) {
+	
 }
 
 long nument(int lon) {
@@ -638,6 +746,13 @@ char yesOrNo(int length) {
 	} while(option != 89 || option != 78);
 }
 
+int idPosition(struct entrenador ent[], int idWanted, int i, int top) {
+	if (ent[i].id == idWanted) // ACABO DE HACER LA MAYOR INNOVACIÓN DE MI VIDA
+		return i;
+	else if (i == top)
+		return NULL;
+	return idPosition(ent, idWanted, i+1, top);
+}
 
 void gotoxy(int x,int y) {
         COORD c;
@@ -646,10 +761,4 @@ void gotoxy(int x,int y) {
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),c);
 }
 
-/* int verifyPosition(char *arr, int id, int i) { // Experimento que salió mal
-	if (*(arr+i) == id)
-		return id;
-	else if (i == 10)
-		return 0;
-	return(arr, id, i+1);
-} */
+
