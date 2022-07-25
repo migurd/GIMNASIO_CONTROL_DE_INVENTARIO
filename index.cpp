@@ -215,7 +215,7 @@ void addEntrenador() {
     			break;
     	if (i < 10) // La condición la hace válida solamente cuando se consulta
     	{
-		    fp = fopen("src/entrenadores.txt", "ab+");
+		    fp = fopen("src/entrenadores.txt", "a+");
 		    if(fp == NULL){
 		        gotoxy(10,5);
 		        printf("Error abriendo el archivo");
@@ -326,7 +326,7 @@ void consultarEntrenadorGeneral() {
     printf("ID   Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
     gotoxy(10,6);
     printf("_______________________________________________________________________________________________");
-    fp = fopen("src/entrenadores.txt","rb+");
+    fp = fopen("src/entrenadores.txt","r+");
     if(fp == NULL){
         gotoxy(10,8);
         printf("Error abriendo el archivo");
@@ -361,7 +361,7 @@ void consultarEntrenadorEspecifico() {
 	    gotoxy(38,5);
 		printf("ID del Entrenador: ");
 		cod = nument(3);
-		fp = fopen("src/entrenadores.txt","rb+");
+		fp = fopen("src/entrenadores.txt","r+");
 		while(!feof(fp)){ // Avanza al siguiente ent[i] si el anterior no está presente
 			fread(&ent[i],sizeof(ent[i]),1,fp);
 			if(cod==ent[i].id){
@@ -414,7 +414,7 @@ void modificarEntrenador() {
 	    gotoxy(10,5);
 	    printf("Inserta la ID de entrenador a modificar: ");
 	    idEntrenador = nument(3);
-	    fp = fopen("src/entrenadores.txt","rb+");
+	    fp = fopen("src/entrenadores.txt","r+");
 	    if(fp == NULL) {
 	        gotoxy(10,6);
 	        printf("Error abriendo el archivo");
@@ -519,13 +519,13 @@ void eliminarEntrenador() {
 	    getch();*/
 	    while (id == ent[p].id && option == 'Y')
 	    {
-		    fp = fopen("src/entrenadores.txt","rb+");
+		    fp = fopen("src/entrenadores.txt","r+");
 		    if(fp == NULL){
 		        gotoxy(10,6);
 		        printf("Error al abrir el archivo");
 		        exit(1);
 		    }
-		    temp = fopen("src/temporal.txt","wb+");
+		    temp = fopen("src/temporal.txt","w+");
 		    if(temp == NULL) {
 		        gotoxy(10,6);
 		        printf("Error al abrir el archivo");
@@ -537,14 +537,14 @@ void eliminarEntrenador() {
 		    fflush(stdin);
 		    option = yesOrNo(1);
 		    for (i = 0; i < 10; i++)
-		    	while(fread(&ent[i],sizeof(ent[i]),1,fp) == 1)
+		    	while(fread(&ent[i],sizeof(struct entrenador),1,fp) == 1)
 		    		if(id != ent[i].id)
-			    		fwrite(&ent[i],sizeof(ent[i]),1,temp);
+			    		fwrite(&ent[i],sizeof(struct entrenador),1,temp);
 			fclose(fp);
 		    fclose(temp);
 			gotoxy(10,14);
 			if(option == 'Y')
-			{	
+			{
 			    remove("src/entrenadores.txt");
 			    rename("src/temporal.txt", "src/entrenadores.txt");
 			    printf("%cEntrenador con la ID `%i` eliminado exitosamente!", 173, id);
@@ -605,30 +605,29 @@ void leerArchivoEntrenador(){
 }
 
 void guardarArchivoEntrenador() {
-	/* // The CODE bugs with this, better not add it, yes I'm telling to you, you babosin
+	// The CODE bugs with this, better not add it, yes I'm telling to you, you babosin
 	FILE *pEnt;
 	FILE *temp;
 	int i = 0;
-	pEnt=fopen("src/entrenadores.txt","rb+");
+	pEnt=fopen("src/entrenadores.txt","r+");
 	if(pEnt == NULL){
 		printf("ARCHIVO NO CREADO/ABIERTO");
 		getch();
 	}
-	temp=fopen("src/temporal.txt","wb+");
+	temp=fopen("src/temporal.txt","w+");
 	if(pEnt == NULL){
 		printf("ARCHIVO NO CREADO/ABIERTO");
 		getch();
 	}
 	else{
 		for (i = 0; i < (firstNull(ent, 0)); i++)
-		  	while(fread(&ent[i],sizeof(ent[i]),1,pEnt) == 1)
-		    	fwrite(&ent[i],sizeof(ent[i]),1,temp);
+		  	while(fread(&ent[i],sizeof(struct entrenador),1,pEnt) == 1)
+		    	fwrite(&ent[i],sizeof(struct entrenador),1,temp);
 		remove("src/entrenadores.txt");
 		rename("src/temporal.txt", "src/entrenadores.txt");
 		}
 		fclose(pEnt);
 		fclose(temp);
-		*/
 }
 
 int idRepetida(struct entrenador ent[], int idWanted) { 
