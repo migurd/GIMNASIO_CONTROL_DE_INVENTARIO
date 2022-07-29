@@ -23,32 +23,25 @@ void leerArchivoCliente();
 void guardarArchivoCliente();
 
 void addEntrenador();
-void addServicios(int idEntrenador);
-void addCliente();
-
 void consultarEntrenador();
 void consultarEntrenadorGeneral();
 void consultarEntrenadorEspecifico();
-
 void modificarEntrenador();
-
 void eliminarEntrenador();
-
 void displayEntrenador(int p, int y);
 
+void addCliente();
 void consultarCliente();
 void consultarClienteGeneral();
 void consultarClienteEspecifico();
-
 void modificarCliente();
-
 void eliminarCliente();
-
 void displayCliente(int p, int y);
-
 int idPositionCli(struct cliente cli[], int idWanted, int i, int top);
+int firstNullCli(struct cliente cli[], int i);
 
-int firstNull(struct cliente cli[], int i);
+void addServicios(int idEntrenador);
+
 
 int idRepetida(struct entrenador ent[], int idWanted);
 int firstNull(struct entrenador ent[], int i);
@@ -67,13 +60,13 @@ struct entrenador {
 	char apellidoMaterno[11];
 	char apellidoPaterno[11];
 	char telefono[11];
-//	char direccion[15];
 	char turno[11];
+//	int estado;
 } ent[10]; // Usaremos las 3 primeras letras para todas las estructuras
 
 struct servicios {
 	int id;
-	char* idInstructor;
+	char idInstructor;
 	char servicio[20];
 	char rutina[20];
 } ser[10];
@@ -99,7 +92,7 @@ struct cliente {
 
 int main() {
 //	system("COLOR C1");
-	menuCliente();
+	menu();
 	return 0;
 }
 
@@ -265,20 +258,22 @@ void addEntrenador() {
     
     while(option == 'Y')
     {
+    	fp = fopen("src/entrenadores.txt", "a+");
     	system("cls");
-    	for (i = 0; i < 10; i++)
-    		if (ent[i].id == NULL)
-    			break;
-    	if (i < 10) // La condición la hace válida solamente cuando se consulta
+    	for (i = 0; !feof(fp); i++) {
+			if (ent[i].id == NULL) {
+				printf("%i", ent[i].id);
+    			getch();
+				break;
+			}
+		}
+    	if (i < 10)
     	{
-		    fp = fopen("src/entrenadores.txt", "a+");
 		    if(fp == NULL){
 		        gotoxy(10,5);
 		        printf("Error abriendo el archivo");
 		        exit(1);
 		    }
-    		/*printf("%i", ent[9].id);
-    		getch(); */
 	    	gotoxy(15,3);
 	        printf("===\t A%cadir entrenador \t===", 164);
 	        gotoxy(15,5);
@@ -287,8 +282,6 @@ void addEntrenador() {
 	        printf("ID: ");
 	        ent[i].id = nument(3);
 	        fflush(stdin);
-//	        if(idRepetida(ent, ent[i].id) != ent[i].id)
-//	        	ent[i].id = idRepetida(ent, ent[i].id);
 	        gotoxy(15,8);
 	        printf("Especialidad: ");
 	        valitext(12, ent[i].especialidad);
@@ -326,6 +319,7 @@ void addEntrenador() {
 		}
 		else {
 			printf("No hay espacio de almacentamiento para m%cs entrenadores. :(", 160);
+			fclose(fp);
 			getch();
 			return;
 		}
@@ -388,7 +382,7 @@ void consultarEntrenadorGeneral() {
         exit(1);
     }
     j=8;
-    while(fread(&ent[i], sizeof(ent[i]), 1, fp) == 1){
+    while(fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1){
         gotoxy(10, j);
         printf("%-5d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno);
         i++;
@@ -461,7 +455,6 @@ void modificarEntrenador() {
     char option = 'Y';
 	int idEntrenador; // Esto era char antes, daba 89 en vez de 344 LMAO
 	int i = 0, p = 0;
-	int condition = 1;
 	do {
 		system("cls");
 		gotoxy(10,3);
@@ -469,12 +462,6 @@ void modificarEntrenador() {
 	    gotoxy(10,5);
 	    printf("Inserta la ID de entrenador a modificar: ");
 	    idEntrenador = nument(3);
-	    fp = fopen("src/entrenadores.txt","r+");
-	    if(fp == NULL) {
-	        gotoxy(10,6);
-	        printf("Error abriendo el archivo");
-	        exit(1);
-	    }
 	    p = idPosition(ent, idEntrenador, 0, 10);
 	    if (ent[p].id == idEntrenador)
 	    {
@@ -487,70 +474,67 @@ void modificarEntrenador() {
 		while(idEntrenador == ent[p].id)
 	    {
 	    	system("cls");
-	    	if (option == 'N') {
-	    		fclose(fp);
-				break;
+	    	if (option == 'N')
+				return;
+		    fp = fopen("src/entrenadores.txt","rw+");
+		    if(fp == NULL) {
+		        gotoxy(10,6);
+		        printf("Error abriendo el archivo");
+		        exit(1);
+		    }
+        	displayEntrenador(p, 2);
+            gotoxy(10,8);
+	        printf("Especialidad: ");
+	        valitext(12, ent[p].especialidad);
+	        gotoxy(10,9);
+	        printf("Primer nombre: ");
+	        valitext(10, ent[p].primerNombre);
+			gotoxy(10,10);
+	        printf("Segundo nombre: ");
+	        valitext(10, ent[p].segundoNombre);
+	        gotoxy(10,11);
+	        printf("Apellido Paterno: ");
+	        valitext(10, ent[p].apellidoPaterno);
+	        gotoxy(10,12);
+	        printf("Apellido Materno: ");
+	        valitext(10, ent[p].apellidoMaterno);
+			gotoxy(10,13);
+			printf("Tel%cfono: ", 130);
+	        valiNum(ent[p].telefono, 10);
+			gotoxy(10,14);
+			printf("Turno: ", 130);
+	        valitext(10, ent[p].turno);
+	        gotoxy(10,16);
+	        printf("%cDesea guardar los cambios? (Y / N): ", 168);
+	        option = yesOrNo(1);
+			gotoxy(10,18);
+			if(option == 'Y')
+			{
+				fseek(fp, -(int)sizeof(ent), SEEK_CUR);
+		    	fwrite(&ent, sizeof(ent), 1, fp);
+		    	printf("%cEntrenador modificado exitosamente!", 173);
 			}
-	        if(idEntrenador == ent[p].id) {
-	        	displayEntrenador(p, 2);
-	            gotoxy(10,8);
-		        printf("Especialidad: ");
-		        valitext(12, ent[p].especialidad);
-		        gotoxy(10,9);
-		        printf("Primer nombre: ");
-		        valitext(10, ent[p].primerNombre);
-				gotoxy(10,10);
-		        printf("Segundo nombre: ");
-		        valitext(10, ent[p].segundoNombre);
-		        gotoxy(10,11);
-		        printf("Apellido Paterno: ");
-		        valitext(10, ent[p].apellidoPaterno);
-		        gotoxy(10,12);
-		        printf("Apellido Materno: ");
-		        valitext(10, ent[p].apellidoMaterno);
-				gotoxy(10,13);
-				printf("Tel%cfono: ", 130);
-		        valiNum(ent[p].telefono, 10);
-		        fflush(stdin);
-				gotoxy(10,14);
-				printf("Turno: ", 130);
-		        valitext(10, ent[p].turno);
-		        gotoxy(10,16);
-		        printf("%cDesea guardar los cambios? (Y / N): ", 168);
-		        fflush(stdin);
-		        option = yesOrNo(1);
-				gotoxy(10,18);
-				if(option == 'Y')
-				{
-					printf("%cEntrenador modificado exitosamente!", 173);
-					//fseek(fp,-sizeof(ent), SEEK_CUR);
-            		fwrite(&ent,sizeof(ent), 1, fp);
-				}
-				else {
-					printf("No se hizo ning%cn cambio", 163);
-				}
-		        getch();
-				condition = 0;
-				option = 'N';
-				fclose(fp);
-	            return;
-	        }
+			else {
+				printf("No se hizo ning%cn cambio", 163);
+			}
+	        getch();
+			option = 'N';
+			fclose(fp);
+            return;
 	    }
 	    fclose(fp);
 	    
-    	if (condition == 1 && option == 'Y')
+    	if (option == 'Y')
     	{
     		system("cls");
 			gotoxy(10,4);
 			printf("La ID `%i` no se encuentra registrada.", idEntrenador);
 			gotoxy(10,5);
 			printf("%cDesea buscar otro entrenador para eliminar? (Y / N): ", 168, 164);
-			fflush(stdin);
 			option = yesOrNo(1);
 			if (option == 'N')
 				return;
 		}
-		condition = 1;
 	}while (option == 'Y');
     
 }
@@ -558,7 +542,6 @@ void modificarEntrenador() {
 void eliminarEntrenador() {
 	int id, i, p; // P = position
 	char option = 'Y';
-	int condition = 1;
     FILE *fp,*temp;
     do {
 	    system("cls");
@@ -589,7 +572,6 @@ void eliminarEntrenador() {
 	    	displayEntrenador(p, 5);
 			gotoxy(10,12);
 			printf("%cEst%c seguro que quiere eliminar el usuario con la ID `%i`? (Y / N): ", 168, 160, id);
-		    fflush(stdin);
 		    option = yesOrNo(1);
 		    for (i = 0; i < 10; i++)
 		    	while(fread(&ent[i],sizeof(struct entrenador),1,fp) == 1)
@@ -611,18 +593,14 @@ void eliminarEntrenador() {
 			getch();
 			return;
 		}
-		if (condition == 1)
-		{
-			system("cls");
-			gotoxy(10,4);
-			printf("La ID `%i` no se encuentra registrada.", id);
-			gotoxy(10,5);
-			printf("%cDesea buscar otro entrenador para eliminar? (Y / N): ", 168, 164);
-			fflush(stdin);
-			option = yesOrNo(1);
-			if (option == 'N')
-				return;
-		}
+		system("cls");
+		gotoxy(10,4);
+		printf("La ID `%i` no se encuentra registrada.", id);
+		gotoxy(10,5);
+		printf("%cDesea buscar otro entrenador para eliminar? (Y / N): ", 168, 164);
+		option = yesOrNo(1);
+		if (option == 'N')
+			return;
 	} while (option == 'Y');
 }
 	
@@ -894,7 +872,7 @@ void modificarCliente(){
 				if(option == 'Y')
 				{
 					printf("%cCliente modificado exitosamente!", 173);
-					//fseek(fp,-sizeof(cli), SEEK_CUR);
+					fseek(fp,-(int)sizeof(cli), SEEK_CUR);
             		fwrite(&cli,sizeof(cli), 1, fp);
 				}
 				else {
@@ -939,9 +917,6 @@ void eliminarCliente(){
 	    id = nument(3);
 	    fflush(stdin); // Se bugea sin esto
 	    p = idPositionCli(cli, id, 0, 10);
-	    /*printf("\n%i", id);
-	    printf("\n%i", ent[p].id);
-	    getch();*/
 	    while (id == cli[p].id && option == 'Y')
 	    {
 		    fp = fopen("src/clientes.txt","r+");
@@ -959,7 +934,6 @@ void eliminarCliente(){
 	    	displayCliente(p, 5);
 			gotoxy(10,12);
 			printf("%cEst%c seguro que quiere eliminar el usuario con la ID `%i`? (Y / N): ", 168, 160, id);
-		    fflush(stdin);
 		    option = yesOrNo(1);
 		    for (i = 0; i < 10; i++)
 		    	while(fread(&cli[i],sizeof(struct cliente),1,fp) == 1)
@@ -988,7 +962,6 @@ void eliminarCliente(){
 			printf("La ID `%i` no se encuentra registrada.", id);
 			gotoxy(10,5);
 			printf("%cDesea buscar otro cliente para eliminar? (Y / N): ", 168, 164);
-			fflush(stdin);
 			option = yesOrNo(1);
 			if (option == 'N')
 				return;
@@ -1012,17 +985,17 @@ void addServicios(int idEntrenador) {
 
 void leerArchivoEntrenador(){
     FILE *pEnt;
+    int i;
     pEnt=fopen("src/entrenadores.txt","a+");
     if(pEnt == NULL){
         printf("ARCHIVO NO CREADO/ABIERTO");
-        getch();
+        exit(1);
     }
-    else{
-        if(!feof(pEnt)){                              //FIN DEL ARCHIVO (feof) FileEndOfFile?
-            fread(&ent,sizeof(ent),firstNull(ent, 0),pEnt);
-        }
-        fclose(pEnt);
+    else {
+        if(!feof(pEnt))
+            fread(&ent, sizeof(struct entrenador), 10, pEnt);
     }
+    fclose(pEnt);
 }
 
 void guardarArchivoEntrenador() {
@@ -1041,14 +1014,18 @@ void guardarArchivoEntrenador() {
 		getch();
 	}
 	else{
-		for (i = 0; i < (firstNull(ent, 0)); i++)
-		  	while(fread(&ent[i],sizeof(struct entrenador),1,pEnt) == 1)
+		for (i = 0; !feof(pEnt); i++) {
+		  	while(fread(&ent[i],sizeof(struct entrenador),1,pEnt) == 1) {
+		  		if (ent[i].id == NULL)
+		  			break;
 		    	fwrite(&ent[i],sizeof(struct entrenador),1,temp);
-		remove("src/entrenadores.txt");
-		rename("src/temporal.txt", "src/entrenadores.txt");
+			  }
+			}
 		}
 		fclose(pEnt);
 		fclose(temp);
+		remove("src/entrenadores.txt");
+		rename("src/temporal.txt", "src/entrenadores.txt");
 }
 
 void leerArchivoCliente(){
@@ -1060,7 +1037,7 @@ void leerArchivoCliente(){
     }
     else{
         if(!feof(pCli)){                              //FIN DEL ARCHIVO (feof) FileEndOfFile?
-            fread(&cli,sizeof(cli),firstNull(cli, 0),pCli);
+            fread(&cli, sizeof(cli), 10, pCli);
         }
         fclose(pCli);
     }
@@ -1070,25 +1047,29 @@ void guardarArchivoCliente(){
 	FILE *pCli;
 	FILE *temp;
 	int i = 0;
-	pCli=fopen("src/clientes.txt","r+");
+	pCli = fopen("src/clientes.txt","r+");
 	if(pCli == NULL){
 		printf("ARCHIVO NO CREADO/ABIERTO");
 		getch();
 	}
-	temp=fopen("src/temporal.txt","w+");
+	temp = fopen("src/temporal.txt","w+");
 	if(pCli == NULL){
 		printf("ARCHIVO NO CREADO/ABIERTO");
 		getch();
 	}
 	else{
-		for (i = 0; i < (firstNull(cli, 0)); i++)
-		  	while(fread(&cli[i],sizeof(struct cliente),1,pCli) == 1)
+		for (i = 0; !feof(pCli); i++) {
+		  	while(fread(&cli[i],sizeof(struct cliente),1,pCli) == 1) {
+		  		if (cli[i].id == NULL)
+		  			break;
 		    	fwrite(&cli[i],sizeof(struct cliente),1,temp);
-		remove("src/clientes.txt");
-		rename("src/temporal.txt", "src/clientes.txt");
+			  }
+			}
 		}
 		fclose(pCli);
 		fclose(temp);
+		remove("src/clientes.txt");
+		rename("src/temporal.txt", "src/clientes.txt");
 }
 
 int idRepetida(struct entrenador ent[], int idWanted) { 
@@ -1118,10 +1099,10 @@ int firstNull(struct entrenador ent[], int i) {
 	return firstNull(ent, i+1);
 }
 
-int firstNull(struct cliente cli[], int i){
+int firstNullCli(struct cliente cli[], int i){
 	if (cli[i].id == NULL)
 		return i+1;
-	return firstNull(cli, i+1);
+	return firstNullCli(cli, i+1);
 }
 
 long nument(int lon) {
