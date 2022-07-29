@@ -19,9 +19,12 @@ void menuCliente();
 void leerArchivoEntrenador();
 void guardarArchivoEntrenador();
 
+void leerArchivoCliente();
+void guardarArchivoCliente();
+
 void addEntrenador();
 void addServicios(int idEntrenador);
-void addCliente(int idEntrenador, int idServicio);
+void addCliente();
 
 void consultarEntrenador();
 void consultarEntrenadorGeneral();
@@ -32,6 +35,20 @@ void modificarEntrenador();
 void eliminarEntrenador();
 
 void displayEntrenador(int p, int y);
+
+void consultarCliente();
+void consultarClienteGeneral();
+void consultarClienteEspecifico();
+
+void modificarCliente();
+
+void eliminarCliente();
+
+void displayCliente(int p, int y);
+
+int idPositionCli(struct cliente cli[], int idWanted, int i, int top);
+
+int firstNull(struct cliente cli[], int i);
 
 int idRepetida(struct entrenador ent[], int idWanted);
 int firstNull(struct entrenador ent[], int i);
@@ -69,20 +86,20 @@ struct registro {
 
 struct cliente {
 	int id;
-	char primerNombre[10];
-	char segundoNombre[10];
-	char apellidoMaterno[10];
-	char apellidoPaterno[10];
-	char telefono[10];
-	char direccion[15];
+	char primerNombre[11];
+	char segundoNombre[11];
+	char apellidoMaterno[11];
+	char apellidoPaterno[11];
+	char telefono[11];
+	char direccion[16];
 	char turno[11];
 	int idRegistro;
 	int idServicios;
-} cli[10];
+} cli[12];
 
 int main() {
 //	system("COLOR C1");
-	menuEntrenador();
+	menuCliente();
 	return 0;
 }
 
@@ -198,7 +215,46 @@ void menuCliente() {
 	int option = 0;
 	
 	do {
+		system("cls");
+		gotoxy(40, 5);
+		printf("======\tMen%c cliente\t======", 163);
+		gotoxy(40, 8);
+		printf("1. Agregar", 163);
+		gotoxy(40, 9);
+		printf("2. Consultar", 163);
+		gotoxy(40, 10);
+		printf("3. Modificar", 163);
+		gotoxy(40, 11);
+		printf("4. Eliminar", 163);
+		gotoxy(40, 12);
+		printf("5. Regresar", 163);
 		
+		gotoxy(44, 15);
+		printf("> > Elige una opci%cn: ", 162);
+		option = nument(1);
+		leerArchivoCliente();
+		switch (option) {
+			case 1:
+				addCliente();
+				break;
+			case 2:
+				consultarCliente();
+				break;
+			case 3:
+				modificarCliente();
+				break;
+			case 4:
+				eliminarCliente();
+				break;
+			case 5:
+				break;
+			default:
+				system("cls");
+				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
+				Sleep(300);
+				break;
+		}
+		guardarArchivoCliente();
 	} while (option != 5);
 }
 
@@ -275,7 +331,6 @@ void addEntrenador() {
 		}
     }
     fclose(fp);
-    
 }
 
 void consultarEntrenador() {
@@ -468,7 +523,7 @@ void modificarEntrenador() {
 				if(option == 'Y')
 				{
 					printf("%cEntrenador modificado exitosamente!", 173);
-					fseek(fp,-sizeof(ent), SEEK_CUR);
+					//fseek(fp,-sizeof(ent), SEEK_CUR);
             		fwrite(&ent,sizeof(ent), 1, fp);
 				}
 				else {
@@ -581,8 +636,374 @@ void displayEntrenador(int p, int y) {
 	printf("%-5d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[p].id, ent[p].especialidad, ent[p].primerNombre, ent[p].segundoNombre, ent[p].apellidoPaterno, ent[p].apellidoMaterno, ent[p].telefono, ent[p].turno);
 }
 
-void addCliente(int idEntrenador, int idServicio) {
+void addCliente() {    //Quite el int entrenadores y el int servicios por el momento
+	FILE *fp;
+    char option = 'Y';
+    int i;
+
+    while(option == 'Y')
+    {
+    	system("cls");
+    	for (i = 0; i < 10; i++)
+    		if (cli[i].id == NULL)
+    			break;
+    	if (i < 10) // La condición la hace válida solamente cuando se consulta
+    	{
+		    fp = fopen("src/clientes.txt", "a+");
+		    if(fp == NULL){
+		        gotoxy(10,5);
+		        printf("Error abriendo el archivo");
+		        exit(1);
+		    }
+    		/*printf("%i", ent[9].id);
+    		getch(); */
+	    	gotoxy(15,3);
+	        printf("===\t A%cadir cliente \t===", 164);
+	        gotoxy(15,5);
+	        printf("Inserta los detalles del cliente");
+	        gotoxy(15,7);
+	        printf("ID: ");
+	        cli[i].id = nument(3);
+	        fflush(stdin);
+//	        if(idRepetida(ent, ent[i].id) != ent[i].id)
+//	        	ent[i].id = idRepetida(ent, ent[i].id);
+	        gotoxy(15,8);
+	        printf("Primer nombre: ");
+	        valitext(10, cli[i].primerNombre);
+	        gotoxy(15,9);
+	        printf("Segundo nombre: ");
+	        valitext(10, cli[i].segundoNombre);
+			gotoxy(15,10);
+	        printf("Apellido paterno: ");
+	        valitext(10, cli[i].apellidoPaterno);
+	        gotoxy(15,11);
+	        printf("Apellido materno: ");
+	        valitext(10, cli[i].apellidoMaterno);
+	        gotoxy(15,12);
+	        printf("Tel%cfono: ",130);
+	        valiNum(cli[i].telefono, 10);
+			gotoxy(15,13);
+			printf("Direcci%cn: ", 162);
+	        valitext(15,cli[i].direccion);
+			gotoxy(15,14);
+			printf("Turno: ", 130);
+	        valitext(10, cli[i].turno);
+	        fwrite(&cli[i], sizeof(cli[i]), 1, fp);
+	        gotoxy(15,16);
+			printf("%cCliente a%cadido exitosamente!", 173, 164);
+	        getch();
+			gotoxy(15,18);
+	        printf("%cDesea a%cadir otro cliente? (Y / N): ", 168, 164);
+	        fflush(stdin);
+	        option = yesOrNo(1);
+	        fclose(fp);
+		}
+		else {
+			printf("No hay espacio de almacentamiento para m%cs clientes. :(", 160);
+			getch();
+			return;
+		}
+    }
+    fclose(fp);
+}
+
+void consultarCliente(){
+	int option = 0;
 	
+	do {
+		system("cls");
+		gotoxy(40, 5);
+		printf("======\tMen%c cliente\t======", 163);
+		gotoxy(40, 8);
+		printf("1. General");
+		gotoxy(40, 9);
+		printf("2. Espec%cfico", 161);
+		gotoxy(40, 10);
+		printf("3. Regresar");
+		
+		gotoxy(44, 15);
+		printf("> > Elige una opci%cn: ", 162);
+		option = nument(1);
+		
+		switch (option) {
+			case 1:
+				consultarClienteGeneral();
+				break;
+			case 2:
+				consultarClienteEspecifico();
+				break;
+			case 3:
+				break;
+			default:
+				system("cls");
+				gotoxy(40, 10);
+				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
+				Sleep(300);
+				break;
+		}
+	} while (option != 3);
+}
+
+void consultarClienteGeneral(){
+	FILE *fp;
+    int i = 0, j;
+    system("cls");
+    gotoxy(36,2);
+    printf("===\t Consulta General Cliente \t===");
+    gotoxy(10,5);
+    printf("ID   P. Nombre    S. Nombre   Apellido P.   Apellido M.  Tel%cfono     Direcci%cn        Turno", 130, 162);
+    gotoxy(10,6);
+    printf("__________________________________________________________________________________________________");
+    fp = fopen("src/clientes.txt","r+");
+    if(fp == NULL){
+        gotoxy(10,8);
+        printf("Error abriendo el archivo");
+        exit(1);
+    }
+    j=8;
+    while(fread(&cli[i], sizeof(cli[i]), 1, fp) == 1){
+        gotoxy(10, j);
+        printf("%-5d%-13s%-12s%-14s%-13s%-13s%-17s%s", cli[i].id, cli[i].primerNombre, cli[i].segundoNombre, cli[i].apellidoPaterno, cli[i].apellidoMaterno, cli[i].telefono, cli[i].direccion, cli[i].turno);
+        i++;
+        j++;
+    }
+    fclose(fp);
+    gotoxy(10, j+3);
+    printf("Presiona cualquier tecla para salir");
+    getch();
+}
+
+void consultarClienteEspecifico(){
+	int cod;
+	int p; // p = position
+	int i = 0;
+	int condition = 1;
+	char option='Y';
+	FILE *fp;
+	p = idPositionCli(cli, cod, 0, 10);
+	while(option == 'Y'){
+		system("cls");
+		gotoxy(38,2);
+	    printf("=== Consulta Especifica Cliente ===");
+	    gotoxy(38,5);
+		printf("ID del Cliente: ");
+		cod = nument(3);
+		fp = fopen("src/clientes.txt","r+");
+		while(!feof(fp)){ // Avanza al siguiente ent[i] si el anterior no está presente
+			fread(&cli[i],sizeof(cli[i]),1,fp);
+			if(cod==cli[i].id){
+				system("cls");
+				gotoxy(38,2);
+			    printf("=== Consulta Especifica Cliente ===");
+			    gotoxy(10,5);
+			    printf("ID   P. Nombre    S. Nombre   Apellido P.   Apellido M.  Tel%cfono     Direcci%cn        Turno", 130, 162);
+			    gotoxy(10,6);
+			    printf("__________________________________________________________________________________________________");
+				gotoxy(10, 8);
+	        	printf("%-5d%-13s%-12s%-14s%-13s%-13s%-17s%s", cli[i].id, cli[i].primerNombre, cli[i].segundoNombre, cli[i].apellidoPaterno, cli[i].apellidoMaterno, cli[i].telefono, cli[i].direccion, cli[i].turno);
+				getch();
+				gotoxy(10,12);
+		        printf("%cDesea buscar otro cliente? (Y / N): ", 168, 164);
+		        option = yesOrNo(1);
+		        condition = 0;
+		        fclose(fp); // ALGO CLAVE ERA QUE CERRARAN ESTOS
+				break;
+			}
+		}
+		if (p == NULL && condition == 1) {
+			system("cls");
+			gotoxy(10,4);
+			printf("La ID `%i` no se encuentra registrada.", cod);
+			gotoxy(10,5);
+			printf("%cDesea buscar otro cliente para consultar? (Y / N): ", 168, 164);
+			fflush(stdin);
+			option = yesOrNo(1);
+			fclose(fp); // ALGO CLAVE ERA QUE CERRARAN ESTOS
+			if (option == 'N')
+				break;
+		}
+		condition = 1;
+	}
+	fclose(fp);
+}
+
+void modificarCliente(){
+	FILE *fp;
+    char option = 'Y';
+	int idCliente; // Esto era char antes, daba 89 en vez de 344 LMAO
+	int i = 0, p = 0;
+	int condition = 1;
+	do {
+		system("cls");
+		gotoxy(10,3);
+	    printf("===\t Modificar Cliente \t===");
+	    gotoxy(10,5);
+	    printf("Inserta la ID del cliente a modificar: ");
+	    idCliente = nument(3);
+	    fp = fopen("src/clientes.txt","r+");
+	    if(fp == NULL) {
+	        gotoxy(10,6);
+	        printf("Error abriendo el archivo");
+	        exit(1);
+	    }
+	    p = idPositionCli(cli, idCliente, 0, 10);
+	    if (cli[p].id == idCliente)
+	    {
+	    	displayCliente(p, 7);
+		    gotoxy(10,14);
+			printf("%cEst%c seguro que quiere editar el usuario con la ID `%i`? (Y / N): ", 168, 160, idCliente);
+		    fflush(stdin);
+		    option = yesOrNo(1);
+		}
+		while(idCliente == cli[p].id)
+	    {
+	    	system("cls");
+	    	if (option == 'N') {
+	    		fclose(fp);
+				break;
+			}
+	        if(idCliente == cli[p].id) {
+	        	displayCliente(p, 2);
+	            gotoxy(10,8);
+		        printf("Primer Nombre: ");
+		        valitext(10, cli[p].primerNombre);
+		        gotoxy(10,9);
+		        printf("Segundo nombre: ");
+		        valitext(10, cli[p].segundoNombre);
+				gotoxy(10,10);
+		        printf("Apellido paterno: ");
+		        valitext(10, cli[p].apellidoPaterno);
+		        gotoxy(10,11);
+		        printf("Apellido Materno: ");
+		        valitext(10, cli[p].apellidoMaterno);
+		        gotoxy(10,12);
+		        printf("Tel%cfono: ",130);
+		        valiNum(cli[p].telefono, 10);
+				gotoxy(10,13);
+				printf("Direcci%cn: ", 162);
+		        valitext(15, cli[p].direccion);
+		        fflush(stdin);
+				gotoxy(10,14);
+				printf("Turno: ", 130);
+		        valitext(10, cli[p].turno);
+		        gotoxy(10,16);
+		        printf("%cDesea guardar los cambios? (Y / N): ", 168);
+		        fflush(stdin);
+		        option = yesOrNo(1);
+				gotoxy(10,18);
+				if(option == 'Y')
+				{
+					printf("%cCliente modificado exitosamente!", 173);
+					//fseek(fp,-sizeof(cli), SEEK_CUR);
+            		fwrite(&cli,sizeof(cli), 1, fp);
+				}
+				else {
+					printf("No se hizo ning%cn cambio", 163);
+				}
+		        getch();
+				condition = 0;
+				option = 'N';
+				fclose(fp);
+	            return;
+	        }
+	    }
+	    fclose(fp);
+	    
+    	if (condition == 1 && option == 'Y')
+    	{
+    		system("cls");
+			gotoxy(10,4);
+			printf("La ID `%i` no se encuentra registrada.", idCliente);
+			gotoxy(10,5);
+			printf("%cDesea buscar otro cliente para eliminar? (Y / N): ", 168, 164);
+			fflush(stdin);
+			option = yesOrNo(1);
+			if (option == 'N')
+				return;
+		}
+		condition = 1;
+	}while (option == 'Y');
+}
+
+void eliminarCliente(){
+	int id, i, p; // P = position
+	char option = 'Y';
+	int condition = 1;
+    FILE *fp,*temp;
+    do {
+	    system("cls");
+		gotoxy(10,3);
+	    printf("=== Eliminar Cliente ===");
+	    gotoxy(10,5);
+	    printf("Insertar la ID a eliminar: ");
+	    id = nument(3);
+	    fflush(stdin); // Se bugea sin esto
+	    p = idPositionCli(cli, id, 0, 10);
+	    /*printf("\n%i", id);
+	    printf("\n%i", ent[p].id);
+	    getch();*/
+	    while (id == cli[p].id && option == 'Y')
+	    {
+		    fp = fopen("src/clientes.txt","r+");
+		    if(fp == NULL){
+		        gotoxy(10,6);
+		        printf("Error al abrir el archivo");
+		        exit(1);
+		    }
+		    temp = fopen("src/temporal.txt","w+");
+		    if(temp == NULL) {
+		        gotoxy(10,6);
+		        printf("Error al abrir el archivo");
+		        exit(1);
+	    	}
+	    	displayCliente(p, 5);
+			gotoxy(10,12);
+			printf("%cEst%c seguro que quiere eliminar el usuario con la ID `%i`? (Y / N): ", 168, 160, id);
+		    fflush(stdin);
+		    option = yesOrNo(1);
+		    for (i = 0; i < 10; i++)
+		    	while(fread(&cli[i],sizeof(struct cliente),1,fp) == 1)
+		    		if(id != cli[i].id)
+			    		fwrite(&cli[i],sizeof(struct cliente),1,temp);
+			fclose(fp);
+		    fclose(temp);
+			gotoxy(10,14);
+			if(option == 'Y')
+			{
+			    remove("src/clientes.txt");
+			    rename("src/temporal.txt", "src/clientes.txt");
+			    printf("%cCliente con la ID `%i` eliminado exitosamente!", 173, id);
+			}
+			else {
+				remove("src/temporal.txt");
+				printf("No se hizo ning%cn cambio", 163);
+			}
+			getch();
+			return;
+		}
+		if (condition == 1)
+		{
+			system("cls");
+			gotoxy(10,4);
+			printf("La ID `%i` no se encuentra registrada.", id);
+			gotoxy(10,5);
+			printf("%cDesea buscar otro cliente para eliminar? (Y / N): ", 168, 164);
+			fflush(stdin);
+			option = yesOrNo(1);
+			if (option == 'N')
+				return;
+		}
+	} while (option == 'Y');
+}
+
+void displayCliente(int p, int y){
+	// y representa la parte de Gotoxy para que baje
+	gotoxy(10,y);
+	printf("ID   P. Nombre    S. Nombre   Apellido P.   Apellido M.  Tel%cfono     Direcci%cn        Turno", 130, 162);
+	gotoxy(10,y+1);
+	printf("__________________________________________________________________________________________________");
+	gotoxy(10, y+3);
+	printf("%-5d%-13s%-12s%-14s%-13s%-13s%-17s%s", cli[p].id, cli[p].primerNombre, cli[p].segundoNombre, cli[p].apellidoPaterno, cli[p].apellidoMaterno, cli[p].telefono, cli[p].direccion, cli[p].turno);
 }
 
 void addServicios(int idEntrenador) {
@@ -630,6 +1051,46 @@ void guardarArchivoEntrenador() {
 		fclose(temp);
 }
 
+void leerArchivoCliente(){
+	FILE *pCli;
+    pCli=fopen("src/clientes.txt","a+");
+    if(pCli == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        getch();
+    }
+    else{
+        if(!feof(pCli)){                              //FIN DEL ARCHIVO (feof) FileEndOfFile?
+            fread(&cli,sizeof(cli),firstNull(cli, 0),pCli);
+        }
+        fclose(pCli);
+    }
+}
+
+void guardarArchivoCliente(){
+	FILE *pCli;
+	FILE *temp;
+	int i = 0;
+	pCli=fopen("src/clientes.txt","r+");
+	if(pCli == NULL){
+		printf("ARCHIVO NO CREADO/ABIERTO");
+		getch();
+	}
+	temp=fopen("src/temporal.txt","w+");
+	if(pCli == NULL){
+		printf("ARCHIVO NO CREADO/ABIERTO");
+		getch();
+	}
+	else{
+		for (i = 0; i < (firstNull(cli, 0)); i++)
+		  	while(fread(&cli[i],sizeof(struct cliente),1,pCli) == 1)
+		    	fwrite(&cli[i],sizeof(struct cliente),1,temp);
+		remove("src/clientes.txt");
+		rename("src/temporal.txt", "src/clientes.txt");
+		}
+		fclose(pCli);
+		fclose(temp);
+}
+
 int idRepetida(struct entrenador ent[], int idWanted) { 
 	FILE *pEnt;
 	int i;
@@ -655,6 +1116,12 @@ int firstNull(struct entrenador ent[], int i) {
 	if (ent[i].id == NULL)
 		return i+1;
 	return firstNull(ent, i+1);
+}
+
+int firstNull(struct cliente cli[], int i){
+	if (cli[i].id == NULL)
+		return i+1;
+	return firstNull(cli, i+1);
 }
 
 long nument(int lon) {
@@ -832,11 +1299,17 @@ int idPosition(struct entrenador ent[], int idWanted, int i, int top) {
 	return idPosition(ent, idWanted, i+1, top);
 }
 
+int idPositionCli(struct cliente cli[], int idWanted, int i, int top){
+	if (cli[i].id == idWanted) // ACABO DE HACER LA MAYOR INNOVACIÓN DE MI VIDA
+		return i;
+	else if (i == top)
+		return NULL;
+	return idPositionCli(cli, idWanted, i+1, top);
+}
+
 void gotoxy(int x,int y) {
         COORD c;
         c.X=x;
         c.Y=y;
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),c);
 }
-
-
