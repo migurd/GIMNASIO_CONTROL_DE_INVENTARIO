@@ -61,6 +61,7 @@ struct entrenador {
 	char apellidoPaterno[11];
 	char telefono[11];
 	char turno[11];
+	int estado;
 //	int estado;
 } ent[10]; // Usaremos las 3 primeras letras para todas las estructuras
 
@@ -92,7 +93,7 @@ struct cliente {
 
 int main() {
 //	system("COLOR C1");
-	menu();
+	menuEntrenador();
 	return 0;
 }
 
@@ -302,11 +303,9 @@ void addEntrenador() {
 	        valiNum(ent[i].telefono, 10);
 	        fflush(stdin);
 			gotoxy(15,14);
-//			printf("Direcci%cn: ", 162);
-//	        gets(ent[i].direccion);
-//	        gotoxy(15,15);
 			printf("Turno: ", 130);
 	        valitext(10, ent[i].turno);
+	        ent[i].estado = 1;
 	        fwrite(&ent[i], sizeof(ent[i]), 1, fp);
 	        gotoxy(15,16);
 			printf("%cEntrenador a%cadido exitosamente!", 173, 164);
@@ -372,9 +371,9 @@ void consultarEntrenadorGeneral() {
     gotoxy(36,2);
     printf("===\t Consulta General Entrenador \t===");
     gotoxy(10,5);
-    printf("ID   Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
+    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
     gotoxy(10,6);
-    printf("_______________________________________________________________________________________________");
+    printf("_______________________________________________________________________________________________________");
     fp = fopen("src/entrenadores.txt","r+");
     if(fp == NULL){
         gotoxy(10,8);
@@ -383,10 +382,13 @@ void consultarEntrenadorGeneral() {
     }
     j=8;
     while(fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1){
-        gotoxy(10, j);
-        printf("%-5d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno);
-        i++;
-        j++;
+    	if (ent[i].estado == 1) { // Solo se imprimen los activos
+    		gotoxy(10, j);
+	        printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%-12s%d", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno, ent[i].estado);
+	        i++;
+	        j++;
+		}
+        
     }
     fclose(fp);
     gotoxy(10, j+3);
@@ -411,18 +413,18 @@ void consultarEntrenadorEspecifico() {
 		printf("ID del Entrenador: ");
 		cod = nument(3);
 		fp = fopen("src/entrenadores.txt","r+");
-		while(!feof(fp)){ // Avanza al siguiente ent[i] si el anterior no está presente
+		while(!feof(fp)){ 
 			fread(&ent[i],sizeof(ent[i]),1,fp);
-			if(cod==ent[i].id){
+			if(cod == ent[i].id){ // Lo imprime aunque esté inactivo
 				system("cls");
 				gotoxy(38,2);
 			    printf("=== Consulta Especifica Entrenador ===");
 			    gotoxy(10,5);
-			    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
+			    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
 			    gotoxy(10,6);
-			    printf("____________________________________________________________________________________________");
+			    printf("_______________________________________________________________________________________________________");
 				gotoxy(10, 8);
-	        	printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno);
+	        	printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%-12s%d", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno, ent[i].estado);
 				getch();
 				gotoxy(10,12);
 		        printf("%cDesea buscar otro entrenador? (Y / N): ", 168, 164);
@@ -607,11 +609,11 @@ void eliminarEntrenador() {
 void displayEntrenador(int p, int y) {
 	// y representa la parte de Gotoxy para que baje
 	gotoxy(10,y);
-	printf("ID   Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno", 130, 162);
+	printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
 	gotoxy(10,y+1);
-	printf("_______________________________________________________________________________________________");
+	printf("_______________________________________________________________________________________________________");
 	gotoxy(10, y+3);
-	printf("%-5d%-16s%-12s%-12s%-13s%-13s%-13s%s", ent[p].id, ent[p].especialidad, ent[p].primerNombre, ent[p].segundoNombre, ent[p].apellidoPaterno, ent[p].apellidoMaterno, ent[p].telefono, ent[p].turno);
+	printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%-12s%d", ent[p].id, ent[p].especialidad, ent[p].primerNombre, ent[p].segundoNombre, ent[p].apellidoPaterno, ent[p].apellidoMaterno, ent[p].telefono, ent[p].turno, ent[p].estado);
 }
 
 void addCliente() {    //Quite el int entrenadores y el int servicios por el momento
@@ -1135,7 +1137,7 @@ void valitext(int lon,char *pnom){
 	int c=0, x=0;
     do{
 		c=getch();
-        if(c>=65 && c<=90 || c>=97 && c<=122 || c==32 || c==164 || c==165){
+        if(c>=65 && c<=90 || c>=97 && c<=122 || c==32 || c == 130 || c >= 160 && c <= 165 || c == 181 || c == 144 || c == 214 || c == 224 || c == 233){
 			printf("%c",c);
             *(pnom+x)=c;
             x++;
