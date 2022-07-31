@@ -453,7 +453,7 @@ void consultarEntrenadorEspecifico() {
 }
 
 void modificarEntrenador() {
-    FILE *fp;
+    FILE *fp, *temp;
     char option = 'Y';
 	int idEntrenador; // Esto era char antes, daba 89 en vez de 344 LMAO
 	int i = 0, p = 0;
@@ -478,7 +478,13 @@ void modificarEntrenador() {
 	    	system("cls");
 	    	if (option == 'N')
 				return;
-		    fp = fopen("src/entrenadores.txt","rw+");
+		    fp = fopen("src/entrenadores.txt","r+");
+		    if(fp == NULL) {
+		        gotoxy(10,6);
+		        printf("Error abriendo el archivo");
+		        exit(1);
+		    }
+		    temp = fopen("src/temporal.txt","w+");
 		    if(fp == NULL) {
 		        gotoxy(10,6);
 		        printf("Error abriendo el archivo");
@@ -510,21 +516,31 @@ void modificarEntrenador() {
 	        printf("%cDesea guardar los cambios? (Y / N): ", 168);
 	        option = yesOrNo(1);
 			gotoxy(10,18);
+			// Primero guarda la variable cambiada y la mueve al principio,
+			// entonces, anota el resto menos la cambiada.
+			if(option == 'Y')
+				fwrite(&ent[p], sizeof(ent[p]), 1, temp);
 			if(option == 'Y')
 			{
-				fseek(fp, -(int)sizeof(ent), SEEK_CUR);
-		    	fwrite(&ent, sizeof(ent), 1, fp);
+				while (fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1)
+					if (ent[i].id != ent[p].id) // Condición para que no se repita la misma id después del cambio
+		    			fwrite(&ent[i], sizeof(ent[i]), 1, temp);
+		    	fclose(fp);
+				fclose(temp);
+				remove("src/entrenadores.txt");
+			    rename("src/temporal.txt", "src/entrenadores.txt");
 		    	printf("%cEntrenador modificado exitosamente!", 173);
 			}
 			else {
 				printf("No se hizo ning%cn cambio", 163);
+				fclose(fp);
+				fclose(temp);
+				remove("src/temporal.txt");
+				
 			}
 	        getch();
-			option = 'N';
-			fclose(fp);
             return;
 	    }
-	    fclose(fp);
 	    
     	if (option == 'Y')
     	{
