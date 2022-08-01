@@ -29,6 +29,8 @@ void consultarEntrenadorEspecifico();
 void modificarEntrenador();
 void eliminarEntrenador();
 void displayEntrenador(int p, int y);
+int idPosition(struct entrenador ent[], int idWanted);
+int idRepetida(struct entrenador ent[], int idWanted);
 
 void addCliente();
 void consultarCliente();
@@ -42,10 +44,6 @@ int firstNullCli(struct cliente cli[], int i);
 
 void addServicios(int idEntrenador);
 
-
-int idRepetida(struct entrenador ent[], int idWanted);
-int firstNull(struct entrenador ent[], int i);
-int idPosition(struct entrenador ent[], int idWanted, int i, int top);
 char yesOrNo(int length);
 long nument(int lon);
 void valitext(int lon,char *pnom);
@@ -173,6 +171,7 @@ void menuEntrenador() {
 				break;
 			case 2:
 				consultarEntrenador();
+				// Aquí no se ocupa
 				break;
 			case 3:
 				modificarEntrenador();
@@ -254,12 +253,17 @@ void menuCliente() {
 void addEntrenador() {
 	FILE *fp;
     char option = 'Y';
-    int i = 0, j = 0;
-    
+    int i = 0, j = 0, k = 0, p = 0;
     while(option == 'Y')
     {
     	i = 0, j = 0;
     	fp = fopen("src/entrenadores.txt", "a+");
+	    if(fp == NULL){
+	    	system("cls");
+	        gotoxy(10,5);
+	        printf("Error abriendo el archivo");
+	        exit(1);
+	    }
     	system("cls");
 	    while(fread(&ent[j], sizeof(struct entrenador), 1, fp) == 1){
 	    	if (ent[j].estado == 1) { // Solo se imprimen los activos
@@ -267,58 +271,69 @@ void addEntrenador() {
 	    	}
 	    	j++;
 		}
-		/*printf("%i", i); // Cantidad de activos
-		getch();*/
+		
+		printf("%i", i); // Cantidad de activos
+		getch();
+		printf("\n%i", j); // Cantidad de activos
+		getch();
     	if (i < 10)
     	{
-		    if(fp == NULL){
-		        gotoxy(10,5);
-		        printf("Error abriendo el archivo");
-		        exit(1);
-		    }
 	    	gotoxy(15,3);
 	        printf("===\t A%cadir entrenador \t===", 164);
 	        gotoxy(15,5);
 	        printf("Inserta los detalles del entrenador");
 	        gotoxy(15,7);
 	        printf("ID: ");
-	        ent[i].id = nument(3);
-	        fflush(stdin);
+	        ent[j].id = nument(3);
+	        if (idRepetida(ent, ent[j].id) == 1) { // Si la ID es repetida, devuelve 1
+	        	system("cls");
+	        	gotoxy(10, 5);
+	        	p = idPosition(ent, ent[j].id);
+				printf("La id `%i` es repetida: ", ent[p].id);
+				displayEntrenador(p, 8);
+				gotoxy(10, 15);
+		        printf("%cDesea intentar con otra ID? (Y / N): ", 168, 164);
+		        option = yesOrNo(1);
+		        fclose(fp);
+		        if (option == 'Y') {
+		        	addEntrenador();
+		        	return;
+				}
+				return;
+			}
 	        gotoxy(15,8);
 	        printf("Especialidad: ");
-	        valitext(12, ent[i].especialidad);
+	        valitext(12, ent[j].especialidad);
 	        gotoxy(15,9);
 	        printf("Primer nombre: ");
-	        valitext(10, ent[i].primerNombre);
+	        valitext(10, ent[j].primerNombre);
 			gotoxy(15,10);
 	        printf("Segundo nombre: ");
-	        valitext(10, ent[i].segundoNombre);
+	        valitext(10, ent[j].segundoNombre);
 	        gotoxy(15,11);
 	        printf("Apellido Paterno: ");
-	        valitext(10, ent[i].apellidoPaterno);
+	        valitext(10, ent[j].apellidoPaterno);
 	        gotoxy(15,12);
 	        printf("Apellido Materno: ");
-	        valitext(10, ent[i].apellidoMaterno);
+	        valitext(10, ent[j].apellidoMaterno);
 			gotoxy(15,13);
 			printf("Tel%cfono: ", 130);
-	        valiNum(ent[i].telefono, 10);
-	        fflush(stdin);
+	        valiNum(ent[j].telefono, 10);
 			gotoxy(15,14);
 			printf("Turno: ", 130);
-	        valitext(10, ent[i].turno);
-	        ent[i].estado = 1;
-	        fwrite(&ent[i], sizeof(ent[i]), 1, fp);
+	        valitext(10, ent[j].turno);
+	        ent[j].estado = 1;
+	        fwrite(&ent[j], sizeof(ent[i]), 1, fp);
 	        gotoxy(15,16);
 			printf("%cEntrenador a%cadido exitosamente!", 173, 164);
 	        getch();
 			gotoxy(15,18);
 	        printf("%cDesea a%cadir otro entrenador? (Y / N): ", 168, 164);
-	        fflush(stdin);
 	        option = yesOrNo(1);
 	        fclose(fp);
 		}
 		else {
-			gotoxy(15, 5);
+			gotoxy(10, 5);
 			printf("No hay espacio de almacentamiento para m%cs entrenadores. :(", 160);
 			fclose(fp);
 			getch();
@@ -406,7 +421,7 @@ void consultarEntrenadorEspecifico() {
 	int condition = 1;
 	char option='Y';
 	FILE *fp;
-	p = idPosition(ent, cod, 0, 10); 
+	p = idPosition(ent, cod); 
 	while(option == 'Y'){
 		system("cls");
 		gotoxy(38,2);
@@ -466,7 +481,7 @@ void modificarEntrenador() {
 	    gotoxy(10,5);
 	    printf("Inserta la ID de entrenador a modificar: ");
 	    idEntrenador = nument(3);
-	    p = idPosition(ent, idEntrenador, 0, 10);
+	    p = idPosition(ent, idEntrenador);
 	    if (ent[p].id == idEntrenador && ent[p].estado == 1)
 	    {
 	    	displayEntrenador(p, 7);
@@ -567,7 +582,7 @@ void eliminarEntrenador() {
 	    printf("Insertar la ID a eliminar: ");
 	    id = nument(3);
 	    fflush(stdin); // Se bugea sin esto
-	    p = idPosition(ent, id, 0, 10);
+	    p = idPosition(ent, id);
 	    
 	    while (id == ent[p].id && option == 'Y' && ent[p].estado == 1)
 	    {
@@ -1001,24 +1016,25 @@ void addServicios(int idEntrenador) {
 
 void leerArchivoEntrenador(){
     FILE *pEnt;
-    int i;
+    int i = 0;
     pEnt = fopen("src/entrenadores.txt","a+");
     if(pEnt == NULL){
         printf("ARCHIVO NO CREADO/ABIERTO");
         exit(1);
     }
     else {
-        if(!feof(pEnt))
-            fread(&ent, sizeof(struct entrenador), 999, pEnt); /// 999 temporal para leer las 999 posibilidades
+        while(fread(&ent[i], sizeof(struct entrenador), 1, pEnt) == 1){
+        	// Leer
+        	i++;
+        }
     }
     fclose(pEnt);
 }
 
-void guardarArchivoEntrenador(struct entrenador ent[]) {
+void guardarArchivoEntrenador(struct entrenador ent[]) { // AKA la poderosa acomoda números
 	FILE *fp; // En vez de guardar el archivo en sí, acomodará las ID por orden numérico
 	FILE *temp;
-	int i = 0, j = 0;
-	struct entrenador aux;
+	int i = 0, j = 0, k = 0, izq = 0, der = 0, temporal = 0;
     fp = fopen("src/entrenadores.txt","r+");
     if(fp == NULL){
         printf("ARCHIVO NO CREADO/ABIERTO");
@@ -1029,39 +1045,68 @@ void guardarArchivoEntrenador(struct entrenador ent[]) {
 		printf("ARCHIVO NO CREADO/ABIERTO");
 		getch();
 	}
-	/*for (i = 0; i < !feof(fp); i++) { // Ciclo para acomodar las IDs de manera alfabética, pero no funciona
-		for (j = i+1; j < !feof(fp); j++)
-			if (ent[i].id < ent[j].id) {
-				aux = ent[i];
-				ent[i] = ent[j];
-				ent[j] = aux;
-				fwrite(&aux, sizeof(struct entrenador), 1, temp);
-				printf("%i", aux);
-				getch();
+	while(fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1){
+    	i++; // para sacar la longitud de entrenadores
+	}
+	
+	int arr[i];
+	
+	for (j = 0; i > j; j++) { // Asignar los valores desordenados a un arreglo
+    	arr[j] = ent[j].id;
+    	/*printf("%i", arr[j]);
+    	getch();*/
+	}
+	// Aquí se acomodan los números del arreglo de manera numérica
+    for (k = 0; k < i; k++) { // i representa el tope
+    	for (izq = 0, der = 1; der < i; izq++, der++) {
+    		if (arr[izq] > arr[der]) {
+    			temporal = arr[der];
+    			arr[der] = arr[izq];
+    			arr[izq] = temporal;
 			}
-	}*/
-	while(fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1) { // EN DESARROLLO
-		while(fread(&ent[j], sizeof(struct entrenador), 1, fp) == 1) {
-			if (ent[i].id < ent[j].id) { // Solo se imprimen los activos
-	    		aux = ent[i];
-				ent[i] = ent[j];
-				ent[j] = aux;
-				/*printf("%i", i);
-				getch();
-				printf("%i j", j);
-				getch();*/
-	    	}
-	    	j++;
 		}
 	}
-	/*
-	printf("%i", i);
-	getch();
-	printf("%i j", j);
-	getch();
-	*/
+	/*printf("%i", arr[11]);
+	getch();*/
+	
+	// Aquí ya se imprimen las variables en orden numérico en un archivo temporal
+	// que se termina reenombrando como entrenador
+	
+	for (j = 0; j < i; j++) {
+		for (k = 0; k < i; k++) {	
+			if (arr[j] == ent[k].id) {
+				fwrite(&ent[k], sizeof(struct entrenador), 1, temp);
+				break;
+			}
+		}
+	}
 	fclose(fp);
 	fclose(temp);
+	remove("src/entrenadores.txt");
+	rename("src/temporal.txt", "src/entrenadores.txt");
+}
+
+int idRepetida(struct entrenador ent[], int idWanted) { 
+	// Devolverá un 1 si la ID es repetida
+	FILE *pEnt;
+	int i = 0, j = 0, k = 0;
+    pEnt = fopen("src/entrenadores.txt","a+");
+    if(pEnt == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        getch();
+    }
+    while(fread(&ent[i], sizeof(struct entrenador), 1, pEnt) == 1){
+        i++;
+    }
+    // `i` Cantidad de IDs existentes
+    for (j = 0; j < i; j++) {	
+		if (idWanted == ent[j].id) {
+			fclose(pEnt);
+			return 1;
+		}
+	}
+	fclose(pEnt);
+	return 0;
 }
 
 void leerArchivoCliente(){
@@ -1106,27 +1151,6 @@ void guardarArchivoCliente(){
 		fclose(temp);
 		remove("src/clientes.txt");
 		rename("src/temporal.txt", "src/clientes.txt");
-}
-
-int idRepetida(struct entrenador ent[], int idWanted) { 
-	FILE *pEnt;
-	int i;
-	int j = 0;
-    pEnt=fopen("src/entrenadores.txt","a+");
-    if(pEnt == NULL){
-        printf("ARCHIVO NO CREADO/ABIERTO");
-        getch();
-    }
-    else{
-        for (i = 0; i < 10; i++) {
-        	if (ent[i].id == idWanted) {
-    			fclose(pEnt);
-				return idRepetida(ent, j+1); // En caso de ser repetida, manda la ID desocupada más baja posible
-			}
-		fclose(pEnt);
-		return idWanted; // No se repitió la ID
-		}
-    }
 }
 
 int firstNull(struct entrenador ent[], int i) {
@@ -1308,12 +1332,25 @@ char yesOrNo(int length) {
 	} while(option != 89 || option != 78);
 }
 
-int idPosition(struct entrenador ent[], int idWanted, int i, int top) {
-	if (ent[i].id == idWanted) // ACABO DE HACER LA MAYOR INNOVACIÓN DE MI VIDA
-		return i;
-	else if (i == top)
-		return NULL;
-	return idPosition(ent, idWanted, i+1, top);
+int idPosition(struct entrenador ent[], int idWanted) {
+	FILE *fp;
+    fp = fopen("src/entrenadores.txt","r+");
+    if(fp == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        exit(1);
+    }
+	int top = 0, i = 0;
+	while(fread(&ent[top], sizeof(struct entrenador), 1, fp) == 1){
+    	top++; // para sacar la longitud de entrenadores
+	}
+	for (i = 0; i < top; i++) {
+		if (ent[i].id == idWanted) {
+			fclose(fp);
+			return i;
+		}
+	}
+	fclose(fp);
+	return NULL;
 }
 
 int idPositionCli(struct cliente cli[], int idWanted, int i, int top){
