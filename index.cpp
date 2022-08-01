@@ -281,7 +281,7 @@ void addEntrenador() {
     	if (i < 10)
     	{
 	    	gotoxy(15,3);
-	        printf("====    A%cadir entrenador    ====", 164);
+	        printf("<====    A%cadir entrenador    ====>", 164);
 	        gotoxy(15,5);
 	        printf("Inserta los detalles del entrenador");
 	        gotoxy(15,7);
@@ -351,7 +351,7 @@ void consultarEntrenador() {
 	do {
 		system("cls");
 		gotoxy(40, 5);
-		printf("====    Consulta Entrenador    ====");
+		printf("<====    Consulta Entrenador    ====>");
 		gotoxy(40, 8);
 		printf("1. General");
 		gotoxy(40, 9);
@@ -388,7 +388,7 @@ void consultarEntrenadorGeneral() {
     int i = 0, j;
     system("cls");
     gotoxy(36,2);
-    printf("====    Consulta General Entrenador    ====");
+    printf("<====    Consulta General Entrenador    ====>");
     gotoxy(10,5);
     printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
     gotoxy(10,6);
@@ -427,7 +427,11 @@ void consultarEntrenadorEspecifico() {
 	while(option == 'Y'){
 		system("cls");
 		gotoxy(38,2);
+<<<<<<< HEAD
 	    printf("<====     Consulta Espec%cfica Entrenador     ====>",161);
+=======
+	    printf("<====    Consulta Especifica Entrenador    ====>");
+>>>>>>> 891f1932af6eb932b2013e4234ba571c622e9ae6
 	    gotoxy(38,5);
 		printf("ID del Entrenador: ");
 		cod = nument(3);
@@ -437,7 +441,11 @@ void consultarEntrenadorEspecifico() {
 			if(cod == ent[i].id){ // Lo imprime aunque est� inactivo
 				system("cls");
 				gotoxy(38,2);
+<<<<<<< HEAD
 			    printf("<====     Consulta Espec%cfica Entrenador     ====>",161);
+=======
+			    printf("<====    Consulta Especifica Entrenador    ====>");
+>>>>>>> 891f1932af6eb932b2013e4234ba571c622e9ae6
 			    gotoxy(10,5);
 			    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
 			    gotoxy(10,6);
@@ -479,7 +487,7 @@ void modificarEntrenador() {
 	do {
 		system("cls");
 		gotoxy(10,3);
-	    printf("====    Modificar Entrenador    ====");
+	    printf("<====    Modificar Entrenador    ====>");
 	    gotoxy(10,5);
 	    printf("Inserta la ID de entrenador a modificar: ");
 	    idEntrenador = nument(3);
@@ -582,7 +590,7 @@ void eliminarEntrenador() {
     do {
 	    system("cls");
 		gotoxy(10,3);
-	    printf("====    Eliminar entrenador    ====");
+	    printf("<====    Eliminar entrenador    ====>");
 	    gotoxy(10,5);
 	    printf("Insertar la ID a eliminar: ");
 	    id = nument(3);
