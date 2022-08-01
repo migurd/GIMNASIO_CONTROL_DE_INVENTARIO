@@ -272,10 +272,10 @@ void addEntrenador() {
 	    	j++;
 		}
 		
-		printf("%i", i); // Cantidad de activos
+		/*printf("%i", i); // Cantidad de activos
 		getch();
 		printf("\n%i", j); // Cantidad de activos
-		getch();
+		getch();*/
     	if (i < 10)
     	{
 	    	gotoxy(15,3);
@@ -581,7 +581,6 @@ void eliminarEntrenador() {
 	    gotoxy(10,5);
 	    printf("Insertar la ID a eliminar: ");
 	    id = nument(3);
-	    fflush(stdin); // Se bugea sin esto
 	    p = idPosition(ent, id);
 	    
 	    while (id == ent[p].id && option == 'Y' && ent[p].estado == 1)
@@ -601,13 +600,20 @@ void eliminarEntrenador() {
 			displayEntrenador(p, 5);
 			gotoxy(10,12);
 	    	ent[p].estado = 0; // El estado queda desactivo y ya no se mostrará o tomará en cuenta
-			printf("%cEst%c seguro que quiere eliminar el usuario con la ID `%i`? (Y / N): ", 168, 160, id);
+			printf("%cEst%cs seguro que quiere eliminar el usuario con la ID `%i`? (Y / N): ", 168, 160, id);
 		    option = yesOrNo(1);
 		 	if(option == 'Y')
-				fwrite(&ent[p], sizeof(ent[p]), 1, temp); // Primero se anota la recién guardada
-			while (fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1)
-				if (ent[i].id != ent[p].id) // Condición para que no se repita la misma id después del cambio
-	    			fwrite(&ent[i], sizeof(ent[i]), 1, temp);
+				fwrite(&ent[p], sizeof(struct entrenador), 1, temp); // Primero se anota la recién guardada
+			while (fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1) {
+			    /*printf("\n%i", ent[i].id);
+			    getch();
+			    printf("\n%i", ent[p].id);
+			    getch();*/
+				if (ent[i].id != ent[p].id) { // Condición para que no se repita la misma id después del cambio
+	    			fwrite(&ent[i], sizeof(struct entrenador), 1, temp);
+	    		}
+	    		i++;
+	    	}
 	    	fclose(fp);
 			fclose(temp);
 			gotoxy(10,15);
