@@ -152,7 +152,7 @@ void menuEntrenador() {
 	do {
 		system("cls");
 		gotoxy(40, 5);
-		printf("======\tMen%c entrenador\t======", 163);
+		printf("======   Men%c entrenador   ======", 163);
 		gotoxy(40, 8);
 		printf("1. Agregar", 163);
 		gotoxy(40, 9);
@@ -174,7 +174,6 @@ void menuEntrenador() {
 				break;
 			case 2:
 				consultarEntrenador();
-				// Aquí no se ocupa
 				break;
 			case 3:
 				modificarEntrenador();
@@ -282,7 +281,7 @@ void addEntrenador() {
     	if (i < 10)
     	{
 	    	gotoxy(15,3);
-	        printf("===\t A%cadir entrenador \t===", 164);
+	        printf("====    A%cadir entrenador    ====", 164);
 	        gotoxy(15,5);
 	        printf("Inserta los detalles del entrenador");
 	        gotoxy(15,7);
@@ -352,7 +351,7 @@ void consultarEntrenador() {
 	do {
 		system("cls");
 		gotoxy(40, 5);
-		printf("======\tMen%c entrenador\t======", 163);
+		printf("====    Consulta Entrenador    ====");
 		gotoxy(40, 8);
 		printf("1. General");
 		gotoxy(40, 9);
@@ -389,7 +388,7 @@ void consultarEntrenadorGeneral() {
     int i = 0, j;
     system("cls");
     gotoxy(36,2);
-    printf("===\t Consulta General Entrenador \t===");
+    printf("====    Consulta General Entrenador    ====");
     gotoxy(10,5);
     printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
     gotoxy(10,6);
@@ -428,17 +427,17 @@ void consultarEntrenadorEspecifico() {
 	while(option == 'Y'){
 		system("cls");
 		gotoxy(38,2);
-	    printf("=== Consulta Espec%cfica Entrenador ===",161);
+	    printf("<====     Consulta Espec%cfica Entrenador     ====>",161);
 	    gotoxy(38,5);
 		printf("ID del Entrenador: ");
 		cod = nument(3);
 		fp = fopen("src/entrenadores.txt","r+");
 		while(!feof(fp)){ 
 			fread(&ent[i],sizeof(ent[i]),1,fp);
-			if(cod == ent[i].id){ // Lo imprime aunque esté inactivo
+			if(cod == ent[i].id){ // Lo imprime aunque estï¿½ inactivo
 				system("cls");
 				gotoxy(38,2);
-			    printf("=== Consulta Espec%cfica Entrenador ===",162);
+			    printf("<====     Consulta Espec%cfica Entrenador     ====>",161);
 			    gotoxy(10,5);
 			    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
 			    gotoxy(10,6);
@@ -480,7 +479,7 @@ void modificarEntrenador() {
 	do {
 		system("cls");
 		gotoxy(10,3);
-	    printf("===\t Modificar Entrenador \t===");
+	    printf("====    Modificar Entrenador    ====");
 	    gotoxy(10,5);
 	    printf("Inserta la ID de entrenador a modificar: ");
 	    idEntrenador = nument(3);
@@ -538,10 +537,13 @@ void modificarEntrenador() {
 			// Primero guarda la variable cambiada y la mueve al principio,
 			// entonces, anota el resto menos la cambiada.
 			if(option == 'Y')
-				fwrite(&ent[p], sizeof(ent[p]), 1, temp); // Primero se anota la recién guardada
-			while (fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1)
-				if (ent[i].id != ent[p].id) // Condición para que no se repita la misma id después del cambio
+				fwrite(&ent[p], sizeof(ent[p]), 1, temp); // Primero se anota la reciï¿½n guardada
+			while (fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1) {
+				if (ent[i].id != ent[p].id) { // Condiciï¿½n para que no se repita la misma id despuï¿½s del cambio
 	    			fwrite(&ent[i], sizeof(ent[i]), 1, temp);
+				}
+				i++;
+			}
 	    	fclose(fp);
 			fclose(temp);
 			if(option == 'Y')
@@ -580,7 +582,7 @@ void eliminarEntrenador() {
     do {
 	    system("cls");
 		gotoxy(10,3);
-	    printf("=== Eliminar entrenador ===");
+	    printf("====    Eliminar entrenador    ====");
 	    gotoxy(10,5);
 	    printf("Insertar la ID a eliminar: ");
 	    id = nument(3);
@@ -602,17 +604,17 @@ void eliminarEntrenador() {
 	    	}
 			displayEntrenador(p, 5);
 			gotoxy(10,12);
-	    	ent[p].estado = 0; // El estado queda desactivo y ya no se mostrará o tomará en cuenta
+	    	ent[p].estado = 0; // El estado queda desactivo y ya no se mostrarï¿½ o tomarï¿½ en cuenta
 			printf("%cEst%cs seguro que quiere eliminar el usuario con la ID `%i`? (Y / N): ", 168, 160, id);
 		    option = yesOrNo(1);
 		 	if(option == 'Y')
-				fwrite(&ent[p], sizeof(struct entrenador), 1, temp); // Primero se anota la recién guardada
+				fwrite(&ent[p], sizeof(struct entrenador), 1, temp); // Primero se anota la reciï¿½n guardada
 			while (fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1) {
 			    /*printf("\n%i", ent[i].id);
 			    getch();
 			    printf("\n%i", ent[p].id);
 			    getch();*/
-				if (ent[i].id != ent[p].id) { // Condición para que no se repita la misma id después del cambio
+				if (ent[i].id != ent[p].id) { // Condiciï¿½n para que no se repita la misma id despuï¿½s del cambio
 	    			fwrite(&ent[i], sizeof(struct entrenador), 1, temp);
 	    		}
 	    		i++;
@@ -831,7 +833,7 @@ void consultarClienteEspecifico(){
 		printf("ID del Cliente: ");
 		cod = nument(3);
 		fp = fopen("src/clientes.txt","r+");
-		while(!feof(fp)){ // Avanza al siguiente cli[i] si el anterior no está presente
+		while(!feof(fp)){ // Avanza al siguiente cli[i] si el anterior no estï¿½ presente
 			fread(&cli[i],sizeof(cli[i]),1,fp);
 			if(cod==cli[i].id){
 				system("cls");
@@ -936,9 +938,9 @@ void modificarCliente(){
 			// Primero guarda la variable cambiada y la mueve al principio,
 			// entonces, anota el resto menos la cambiada.
 			if(option == 'Y')
-				fwrite(&cli[p], sizeof(cli[p]), 1, temp); // Primero se anota la recién guardada
+				fwrite(&cli[p], sizeof(cli[p]), 1, temp); // Primero se anota la reciï¿½n guardada
 			while (fread(&cli[i], sizeof(struct cliente), 1, fp) == 1){
-				if (cli[i].id != cli[p].id){  // Condición para que no se repita la misma id después del cambio
+				if (cli[i].id != cli[p].id){  // Condiciï¿½n para que no se repita la misma id despuï¿½s del cambio
 	    			fwrite(&cli[i], sizeof(cli[i]), 1, temp);
 	    		}
 	    		i++;
@@ -1002,17 +1004,17 @@ void eliminarCliente(){
 	    	}
 			displayCliente(p, 5);
 			gotoxy(10,12);
-	    	cli[p].estado = 0; // El estado queda desactivo y ya no se mostrará o tomará en cuenta
+	    	cli[p].estado = 0; // El estado queda desactivo y ya no se mostrarï¿½ o tomarï¿½ en cuenta
 			printf("%cEst%cs seguro que quiere eliminar el cliente con la ID `%i`? (Y / N): ", 168, 160, id);
 		    option = yesOrNo(1);
 		 	if(option == 'Y')
-				fwrite(&cli[p], sizeof(struct cliente), 1, temp); // Primero se anota la recién guardada
+				fwrite(&cli[p], sizeof(struct cliente), 1, temp); // Primero se anota la reciï¿½n guardada
 			while (fread(&cli[i], sizeof(struct cliente), 1, fp) == 1) {
 			    /*printf("\n%i", ent[i].id);
 			    getch();
 			    printf("\n%i", ent[p].id);
 			    getch();*/
-				if (cli[i].id != cli[p].id) { // Condición para que no se repita la misma id después del cambio
+				if (cli[i].id != cli[p].id) { // Condiciï¿½n para que no se repita la misma id despuï¿½s del cambio
 	    			fwrite(&cli[i], sizeof(struct cliente), 1, temp);
 	    		}
 	    		i++;
@@ -1075,8 +1077,8 @@ void leerArchivoEntrenador(){
     fclose(pEnt);
 }
 
-void guardarArchivoEntrenador(struct entrenador ent[]) { // AKA la poderosa acomoda números
-	FILE *fp; // En vez de guardar el archivo en sí, acomodará las ID por orden numérico
+void guardarArchivoEntrenador(struct entrenador ent[]) { // AKA la poderosa acomoda nï¿½meros
+	FILE *fp; // En vez de guardar el archivo en sï¿½, acomodarï¿½ las ID por orden numï¿½rico
 	FILE *temp;
 	int i = 0, j = 0, k = 0, izq = 0, der = 0, temporal = 0;
     fp = fopen("src/entrenadores.txt","r+");
@@ -1100,7 +1102,7 @@ void guardarArchivoEntrenador(struct entrenador ent[]) { // AKA la poderosa acom
     	/*printf("%i", arr[j]);
     	getch();*/
 	}
-	// Aquí se acomodan los números del arreglo de manera numérica
+	// Aquï¿½ se acomodan los nï¿½meros del arreglo de manera numï¿½rica
     for (k = 0; k < i; k++) { // i representa el tope
     	for (izq = 0, der = 1; der < i; izq++, der++) {
     		if (arr[izq] > arr[der]) {
@@ -1113,7 +1115,7 @@ void guardarArchivoEntrenador(struct entrenador ent[]) { // AKA la poderosa acom
 	/*printf("%i", arr[11]);
 	getch();*/
 	
-	// Aquí ya se imprimen las variables en orden numérico en un archivo temporal
+	// Aquï¿½ ya se imprimen las variables en orden numï¿½rico en un archivo temporal
 	// que se termina reenombrando como entrenador
 	
 	for (j = 0; j < i; j++) {
@@ -1131,7 +1133,7 @@ void guardarArchivoEntrenador(struct entrenador ent[]) { // AKA la poderosa acom
 }
 
 int idRepetida(struct entrenador ent[], int idWanted) { 
-	// Devolverá un 1 si la ID es repetida
+	// Devolverï¿½ un 1 si la ID es repetida
 	FILE *pEnt;
 	int i = 0, j = 0, k = 0;
     pEnt = fopen("src/entrenadores.txt","a+");
@@ -1154,7 +1156,7 @@ int idRepetida(struct entrenador ent[], int idWanted) {
 }
 
 int idRepetidaCli(struct cliente cli[], int idWanted){
-	// Devolverá un 1 si la ID es repetida
+	// Devolverï¿½ un 1 si la ID es repetida
 	FILE *pCli;
 	int i = 0, j = 0, k = 0;
     pCli = fopen("src/clientes.txt","a+");
@@ -1194,7 +1196,7 @@ void leerArchivoCliente(){
 }
 
 void guardarArchivoCliente(struct cliente cli[]){
-	FILE *fp; // En vez de guardar el archivo en sí, acomodará las ID por orden numérico
+	FILE *fp; // En vez de guardar el archivo en sï¿½, acomodarï¿½ las ID por orden numï¿½rico
 	FILE *temp;
 	int i = 0, j = 0, k = 0, izq = 0, der = 0, temporal = 0;
     fp = fopen("src/clientes.txt","r+");
@@ -1218,7 +1220,7 @@ void guardarArchivoCliente(struct cliente cli[]){
     	/*printf("%i", arr[j]);
     	getch();*/
 	}
-	// Aquí se acomodan los números del arreglo de manera numérica
+	// Aquï¿½ se acomodan los nï¿½meros del arreglo de manera numï¿½rica
     for (k = 0; k < i; k++) { // i representa el tope
     	for (izq = 0, der = 1; der < i; izq++, der++) {
     		if (arr[izq] > arr[der]) {
@@ -1231,7 +1233,7 @@ void guardarArchivoCliente(struct cliente cli[]){
 	/*printf("%i", arr[11]);
 	getch();*/
 	
-	// Aquí ya se imprimen las variables en orden numérico en un archivo temporal
+	// Aquï¿½ ya se imprimen las variables en orden numï¿½rico en un archivo temporal
 	// que se termina reenombrando como entrenador
 	
 	for (j = 0; j < i; j++) {
