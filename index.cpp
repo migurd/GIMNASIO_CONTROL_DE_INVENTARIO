@@ -85,7 +85,8 @@ struct cliente {
 	char direccion[16];
 	char turno[11];
 	int idRegistro;
-	int idServicios;
+//	int idServicios;
+	int estado;
 } cli[12];
 
 int main() {
@@ -149,7 +150,7 @@ void menuEntrenador() {
 	do {
 		system("cls");
 		gotoxy(40, 5);
-		printf("======\tMen%c entrenador\t======", 163);
+		printf("======   Men%c entrenador   ======", 163);
 		gotoxy(40, 8);
 		printf("1. Agregar", 163);
 		gotoxy(40, 9);
@@ -171,7 +172,6 @@ void menuEntrenador() {
 				break;
 			case 2:
 				consultarEntrenador();
-				// Aquí no se ocupa
 				break;
 			case 3:
 				modificarEntrenador();
@@ -253,7 +253,7 @@ void menuCliente() {
 void addEntrenador() {
 	FILE *fp;
     char option = 'Y';
-    int i = 0, j = 0, k = 0, p = 0;
+    int i = 0, j = 0, p = 0;
     while(option == 'Y')
     {
     	i = 0, j = 0;
@@ -279,7 +279,7 @@ void addEntrenador() {
     	if (i < 10)
     	{
 	    	gotoxy(15,3);
-	        printf("===\t A%cadir entrenador \t===", 164);
+	        printf("====    A%cadir entrenador    ====", 164);
 	        gotoxy(15,5);
 	        printf("Inserta los detalles del entrenador");
 	        gotoxy(15,7);
@@ -349,7 +349,7 @@ void consultarEntrenador() {
 	do {
 		system("cls");
 		gotoxy(40, 5);
-		printf("======\tMen%c entrenador\t======", 163);
+		printf("====    Consulta Entrenador    ====");
 		gotoxy(40, 8);
 		printf("1. General");
 		gotoxy(40, 9);
@@ -386,7 +386,7 @@ void consultarEntrenadorGeneral() {
     int i = 0, j;
     system("cls");
     gotoxy(36,2);
-    printf("===\t Consulta General Entrenador \t===");
+    printf("====    Consulta General Entrenador    ====");
     gotoxy(10,5);
     printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
     gotoxy(10,6);
@@ -425,7 +425,7 @@ void consultarEntrenadorEspecifico() {
 	while(option == 'Y'){
 		system("cls");
 		gotoxy(38,2);
-	    printf("=== Consulta Especifica Entrenador ===");
+	    printf("====    Consulta Especifica Entrenador    ====");
 	    gotoxy(38,5);
 		printf("ID del Entrenador: ");
 		cod = nument(3);
@@ -435,7 +435,7 @@ void consultarEntrenadorEspecifico() {
 			if(cod == ent[i].id){ // Lo imprime aunque esté inactivo
 				system("cls");
 				gotoxy(38,2);
-			    printf("=== Consulta Especifica Entrenador ===");
+			    printf("===    Consulta Especifica Entrenador    ====");
 			    gotoxy(10,5);
 			    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
 			    gotoxy(10,6);
@@ -477,7 +477,7 @@ void modificarEntrenador() {
 	do {
 		system("cls");
 		gotoxy(10,3);
-	    printf("===\t Modificar Entrenador \t===");
+	    printf("====    Modificar Entrenador    ====");
 	    gotoxy(10,5);
 	    printf("Inserta la ID de entrenador a modificar: ");
 	    idEntrenador = nument(3);
@@ -536,9 +536,12 @@ void modificarEntrenador() {
 			// entonces, anota el resto menos la cambiada.
 			if(option == 'Y')
 				fwrite(&ent[p], sizeof(ent[p]), 1, temp); // Primero se anota la recién guardada
-			while (fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1)
-				if (ent[i].id != ent[p].id) // Condición para que no se repita la misma id después del cambio
+			while (fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1) {
+				if (ent[i].id != ent[p].id) { // Condición para que no se repita la misma id después del cambio
 	    			fwrite(&ent[i], sizeof(ent[i]), 1, temp);
+				}
+				i++;
+			}
 	    	fclose(fp);
 			fclose(temp);
 			if(option == 'Y')
@@ -577,7 +580,7 @@ void eliminarEntrenador() {
     do {
 	    system("cls");
 		gotoxy(10,3);
-	    printf("=== Eliminar entrenador ===");
+	    printf("====    Eliminar entrenador    ====");
 	    gotoxy(10,5);
 	    printf("Insertar la ID a eliminar: ");
 	    id = nument(3);
