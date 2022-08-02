@@ -30,7 +30,8 @@ void modificarEntrenador();
 void eliminarEntrenador();
 void displayEntrenador(int p, int y);
 int idPosition(struct entrenador ent[], int idWanted);
-int idRepetida(struct entrenador ent[], int idWanted);
+int idRepetidaEnt(struct entrenador ent[], int idWanted);
+int idSiguienteEnt(struct entrenador ent[], int i);
 
 void addCliente();
 void consultarCliente();
@@ -41,6 +42,7 @@ void eliminarCliente();
 void displayCliente(int p, int y);
 int idPositionCli(struct cliente cli[], int idWanted);
 int idRepetidaCli(struct cliente cli[], int idWanted);
+int idSiguienteCli(struct cliente ent[], int i);
 
 void addServicios(int idEntrenador);
 
@@ -193,18 +195,6 @@ void menuEntrenador() {
 	} while (option != 5);
 }
 
-void menuServicios() {
-	system("cls");
-	printf("No hay nada aqui we salte alv");
-	getch();
-}
-
-void menuRegistro() {
-	system("cls");
-	printf("No hay nada aqui we salte alv");
-	getch();
-}
-
 void menuCliente() {
 	int option = 0;
 	
@@ -252,6 +242,18 @@ void menuCliente() {
 	} while (option != 5);
 }
 
+void menuRegistro() {
+	system("cls");
+	printf("WIP");
+	getch();
+}
+
+void menuServicios() {
+	system("cls");
+	printf("WIP");
+	getch();
+}
+
 void addEntrenador() {
 	FILE *fp;
     char option = 'Y';
@@ -273,11 +275,6 @@ void addEntrenador() {
 	    	}
 	    	j++;
 		}
-		
-		/*printf("%i", i); // Cantidad de activos
-		getch();
-		printf("\n%i", j); // Cantidad de activos
-		getch();*/
     	if (i < 10)
     	{
 	    	gotoxy(15,3);
@@ -287,7 +284,7 @@ void addEntrenador() {
 	        gotoxy(15,7);
 	        printf("ID: ");
 	        ent[j].id = nument(3);
-	        if (idRepetida(ent, ent[j].id) == 1) { // Si la ID es repetida, devuelve 1
+	        if (idRepetidaEnt(ent, ent[j].id) == 1) { // Si la ID es repetida, devuelve 1
 	        	system("cls");
 	        	gotoxy(10, 5);
 	        	p = idPosition(ent, ent[j].id);
@@ -297,6 +294,12 @@ void addEntrenador() {
 		        printf("%cDesea intentar con otra ID? (Y / N): ", 168, 164);
 		        option = yesOrNo(1);
 		        fclose(fp);
+		        if (option == 'N')
+		        	return;
+				guardarArchivoEntrenador(ent); // Para ordenar las IDs
+		        gotoxy(10, 17);
+		        printf("Recomendaci%cn: La id `%i` es la pr%cxima ID disponible", 162, idSiguienteEnt(ent, 0), 162);
+		        getch();
 		        if (option == 'Y') {
 		        	addEntrenador();
 		        	return;
@@ -427,11 +430,7 @@ void consultarEntrenadorEspecifico() {
 	while(option == 'Y'){
 		system("cls");
 		gotoxy(38,2);
-<<<<<<< HEAD
-	    printf("<====     Consulta Espec%cfica Entrenador     ====>",161);
-=======
-	    printf("<====    Consulta Especifica Entrenador    ====>");
->>>>>>> 891f1932af6eb932b2013e4234ba571c622e9ae6
+	    printf("<====     Consulta Espec%cfica Entrenador     ====>", 161);
 	    gotoxy(38,5);
 		printf("ID del Entrenador: ");
 		cod = nument(3);
@@ -441,11 +440,7 @@ void consultarEntrenadorEspecifico() {
 			if(cod == ent[i].id){ // Lo imprime aunque estï¿½ inactivo
 				system("cls");
 				gotoxy(38,2);
-<<<<<<< HEAD
-			    printf("<====     Consulta Espec%cfica Entrenador     ====>",161);
-=======
-			    printf("<====    Consulta Especifica Entrenador    ====>");
->>>>>>> 891f1932af6eb932b2013e4234ba571c622e9ae6
+			    printf("<====     Consulta Espec%cfica Entrenador     ====>", 161);
 			    gotoxy(10,5);
 			    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
 			    gotoxy(10,6);
@@ -664,6 +659,109 @@ void displayEntrenador(int p, int y) {
 	printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%-12s%d", ent[p].id, ent[p].especialidad, ent[p].primerNombre, ent[p].segundoNombre, ent[p].apellidoPaterno, ent[p].apellidoMaterno, ent[p].telefono, ent[p].turno, ent[p].estado);
 }
 
+void leerArchivoEntrenador(){
+    FILE *pEnt;
+    int i = 0;
+    pEnt = fopen("src/entrenadores.txt","r+");
+    if(pEnt == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        exit(1);
+    }
+    else {
+        while(fread(&ent[i], sizeof(struct entrenador), 1, pEnt) == 1){
+        	// Leer
+        	i++;
+        }
+    }
+    fclose(pEnt);
+}
+
+void guardarArchivoEntrenador(struct entrenador ent[]) { // AKA la poderosa acomoda nï¿½meros
+	FILE *fp; // En vez de guardar el archivo en sï¿½, acomodarï¿½ las ID por orden numï¿½rico
+	FILE *temp;
+	int i = 0, j = 0, k = 0, izq = 0, der = 0, temporal = 0;
+    fp = fopen("src/entrenadores.txt","r+");
+    if(fp == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        exit(1);
+    }
+    temp = fopen("src/temporal.txt","w+");
+	if(temp == NULL) {
+		printf("ARCHIVO NO CREADO/ABIERTO");
+		getch();
+	}
+	while(fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1){
+    	i++; // para sacar la longitud de entrenadores
+	}
+	
+	int arr[i];
+	
+	for (j = 0; i > j; j++) { // Asignar los valores desordenados a un arreglo
+    	arr[j] = ent[j].id;
+    	/*printf("%i", arr[j]);
+    	getch();*/
+	}
+	// Aquï¿½ se acomodan los nï¿½meros del arreglo de manera numï¿½rica
+    for (k = 0; k < i; k++) { // i representa el tope
+    	for (izq = 0, der = 1; der < i; izq++, der++) {
+    		if (arr[izq] > arr[der]) {
+    			temporal = arr[der];
+    			arr[der] = arr[izq];
+    			arr[izq] = temporal;
+			}
+		}
+	}
+	/*printf("%i", arr[11]);
+	getch();*/
+	
+	// Aquï¿½ ya se imprimen las variables en orden numï¿½rico en un archivo temporal
+	// que se termina reenombrando como entrenador
+	
+	for (j = 0; j < i; j++) {
+		for (k = 0; k < i; k++) {	
+			if (arr[j] == ent[k].id) {
+				fwrite(&ent[k], sizeof(struct entrenador), 1, temp);
+				break;
+			}
+		}
+	}
+	fclose(fp);
+	fclose(temp);
+	remove("src/entrenadores.txt");
+	rename("src/temporal.txt", "src/entrenadores.txt");
+}
+
+int idRepetidaEnt(struct entrenador ent[], int idWanted) { 
+	// Devolverï¿½ un 1 si la ID es repetida
+	FILE *pEnt;
+	int i = 0, j = 0, k = 0;
+    pEnt = fopen("src/entrenadores.txt","a+");
+    if(pEnt == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        getch();
+    }
+    while(fread(&ent[i], sizeof(struct entrenador), 1, pEnt) == 1){
+        i++;
+    }
+    // `i` Cantidad de IDs existentes
+    for (j = 0; j < i; j++) {	
+		if (idWanted == ent[j].id) {
+			fclose(pEnt);
+			return 1;
+		}
+	}
+	fclose(pEnt);
+	return 0;
+}
+
+int idSiguienteEnt(struct entrenador ent[], int i) {
+	if ((ent[i].id)+1 != (ent[i+1].id))  // Se actualiza por si se añadió un nuevo valor
+		leerArchivoEntrenador(); // Sin esto repite el mismo núemero dos veces seguidas el mismo n
+	if ((ent[i].id)+1 == (ent[i+1].id))
+		return idSiguienteEnt(ent, i+1);
+	return ent[i].id + 1;
+}
+
 void addCliente() {    //Quite el int entrenadores y el int servicios por el momento
 	FILE *fp;
     char option = 'Y';
@@ -709,6 +807,12 @@ void addCliente() {    //Quite el int entrenadores y el int servicios por el mom
 		        printf("%cDesea intentar con otra ID? (Y / N): ", 168, 164);
 		        option = yesOrNo(1);
 		        fclose(fp);
+		        if (option == 'N')
+		        	return;
+				guardarArchivoCliente(cli); // Para ordenar las IDs
+		        gotoxy(10, 17);
+		        printf("Recomendaci%cn: La id `%i` es la pr%cxima ID disponible", 162, idSiguienteCli(cli, 0), 162);
+		        getch();
 		        if (option == 'Y') {
 		        	addCliente();
 		        	return;
@@ -1064,132 +1168,10 @@ void displayCliente(int p, int y){
 	printf("%-5d%-13s%-12s%-14s%-13s%-13s%-17s%-12s%d", cli[p].id, cli[p].primerNombre, cli[p].segundoNombre, cli[p].apellidoPaterno, cli[p].apellidoMaterno, cli[p].telefono, cli[p].direccion, cli[p].turno, cli[p].estado);
 }
 
-void addServicios(int idEntrenador) {
-	
-}
-
-void leerArchivoEntrenador(){
-    FILE *pEnt;
-    int i = 0;
-    pEnt = fopen("src/entrenadores.txt","a+");
-    if(pEnt == NULL){
-        printf("ARCHIVO NO CREADO/ABIERTO");
-        exit(1);
-    }
-    else {
-        while(fread(&ent[i], sizeof(struct entrenador), 1, pEnt) == 1){
-        	// Leer
-        	i++;
-        }
-    }
-    fclose(pEnt);
-}
-
-void guardarArchivoEntrenador(struct entrenador ent[]) { // AKA la poderosa acomoda nï¿½meros
-	FILE *fp; // En vez de guardar el archivo en sï¿½, acomodarï¿½ las ID por orden numï¿½rico
-	FILE *temp;
-	int i = 0, j = 0, k = 0, izq = 0, der = 0, temporal = 0;
-    fp = fopen("src/entrenadores.txt","r+");
-    if(fp == NULL){
-        printf("ARCHIVO NO CREADO/ABIERTO");
-        exit(1);
-    }
-    temp = fopen("src/temporal.txt","w+");
-	if(temp == NULL) {
-		printf("ARCHIVO NO CREADO/ABIERTO");
-		getch();
-	}
-	while(fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1){
-    	i++; // para sacar la longitud de entrenadores
-	}
-	
-	int arr[i];
-	
-	for (j = 0; i > j; j++) { // Asignar los valores desordenados a un arreglo
-    	arr[j] = ent[j].id;
-    	/*printf("%i", arr[j]);
-    	getch();*/
-	}
-	// Aquï¿½ se acomodan los nï¿½meros del arreglo de manera numï¿½rica
-    for (k = 0; k < i; k++) { // i representa el tope
-    	for (izq = 0, der = 1; der < i; izq++, der++) {
-    		if (arr[izq] > arr[der]) {
-    			temporal = arr[der];
-    			arr[der] = arr[izq];
-    			arr[izq] = temporal;
-			}
-		}
-	}
-	/*printf("%i", arr[11]);
-	getch();*/
-	
-	// Aquï¿½ ya se imprimen las variables en orden numï¿½rico en un archivo temporal
-	// que se termina reenombrando como entrenador
-	
-	for (j = 0; j < i; j++) {
-		for (k = 0; k < i; k++) {	
-			if (arr[j] == ent[k].id) {
-				fwrite(&ent[k], sizeof(struct entrenador), 1, temp);
-				break;
-			}
-		}
-	}
-	fclose(fp);
-	fclose(temp);
-	remove("src/entrenadores.txt");
-	rename("src/temporal.txt", "src/entrenadores.txt");
-}
-
-int idRepetida(struct entrenador ent[], int idWanted) { 
-	// Devolverï¿½ un 1 si la ID es repetida
-	FILE *pEnt;
-	int i = 0, j = 0, k = 0;
-    pEnt = fopen("src/entrenadores.txt","a+");
-    if(pEnt == NULL){
-        printf("ARCHIVO NO CREADO/ABIERTO");
-        getch();
-    }
-    while(fread(&ent[i], sizeof(struct entrenador), 1, pEnt) == 1){
-        i++;
-    }
-    // `i` Cantidad de IDs existentes
-    for (j = 0; j < i; j++) {	
-		if (idWanted == ent[j].id) {
-			fclose(pEnt);
-			return 1;
-		}
-	}
-	fclose(pEnt);
-	return 0;
-}
-
-int idRepetidaCli(struct cliente cli[], int idWanted){
-	// Devolverï¿½ un 1 si la ID es repetida
-	FILE *pCli;
-	int i = 0, j = 0, k = 0;
-    pCli = fopen("src/clientes.txt","a+");
-    if(pCli == NULL){
-        printf("ARCHIVO NO CREADO/ABIERTO");
-        getch();
-    }
-    while(fread(&cli[i], sizeof(struct cliente), 1, pCli) == 1){
-        i++;
-    }
-    // `i` Cantidad de IDs existentes
-    for (j = 0; j < i; j++) {	
-		if (idWanted == cli[j].id) {
-			fclose(pCli);
-			return 1;
-		}	
-	}
-	fclose(pCli);
-	return 0;
-}
-
 void leerArchivoCliente(){
 	FILE *pCli;
     int i = 0;
-    pCli = fopen("src/clientes.txt","a+");
+    pCli = fopen("src/clientes.txt","r+");
     if(pCli == NULL){
         printf("ARCHIVO NO CREADO/ABIERTO");
         exit(1);
@@ -1256,6 +1238,41 @@ void guardarArchivoCliente(struct cliente cli[]){
 	fclose(temp);
 	remove("src/clientes.txt");
 	rename("src/temporal.txt", "src/clientes.txt");
+}
+
+int idRepetidaCli(struct cliente cli[], int idWanted){
+	// Devolverï¿½ un 1 si la ID es repetida
+	FILE *pCli;
+	int i = 0, j = 0, k = 0;
+    pCli = fopen("src/clientes.txt","a+");
+    if(pCli == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        getch();
+    }
+    while(fread(&cli[i], sizeof(struct cliente), 1, pCli) == 1){
+        i++;
+    }
+    // `i` Cantidad de IDs existentes
+    for (j = 0; j < i; j++) {	
+		if (idWanted == cli[j].id) {
+			fclose(pCli);
+			return 1;
+		}	
+	}
+	fclose(pCli);
+	return 0;
+}
+
+int idSiguienteCli(struct cliente cli[], int i) {
+	if ((cli[i].id)+1 != (cli[i+1].id)) // Sin esto repite el mismo núemero dos veces seguidas
+		leerArchivoCliente();
+	if ((cli[i].id)+1 == (cli[i+1].id))
+		return idSiguienteCli(cli, i+1);
+	return cli[i].id + 1;
+}
+
+void addServicios(int idEntrenador) {
+	
 }
 
 long nument(int lon) {
