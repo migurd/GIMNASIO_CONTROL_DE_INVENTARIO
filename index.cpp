@@ -52,33 +52,43 @@ void valitext(int lon,char *pnom);
 void valifec(char *pfecha);
 void valiNum(char *pnom, int length);
 
+// Un negocio primero necesita algo que ofrecer (SERVICIOS), en segundo lugar, empleados (ENTRENADORES),
+// y finalmentem, un negocio necesita clientes para mantenerse a flote, y los CLIENTES necesitan
+// un tipo de registro o suscripción para estar activos o estar inactivos temporalmente (REGISTRO). FIN
+// ---------------------------------------------------------------------------------------------------------
+
+// Nota importante con el estado:
+// if estado de servicio conectado a entrenador es inactivo, entonces, los entrenadores relacionados serán inactivos también,
+// pero si se reactiva, se activarán los entrenadores relacionados. FIN
+// if estado de entrenadores es inactivo, entonces, los clientes relacionados buscarán a uno con sus mismas capacidades, de otro modo,
+// se mantendrán inactivos hasta que se les asigne uno nuevo. FIN
+
+// Otra nota: Tiene que existir servicios para haber entrenadores
+// Si no hay servicios, entonces, te pedirá añadirlos. FIN
+
+struct servicios {
+	int id;
+	char especialidadReq[13]; // Especialidad requerida para llevar a cabo el servicio
+	char servicio[31];
+	int estado;
+} ser[10];
+
 struct entrenador {
 	int id;
-	char especialidad[13];
+	char especialidad[13]; // Si no coincide con una especialidad de servicios pregunta para reiniciar el addEntrenador y display de especialidades disponibles
 	char primerNombre[11];
 	char segundoNombre[11];
 	char apellidoMaterno[11];
 	char apellidoPaterno[11];
 	char telefono[11];
-	char turno[11];
+	char turno[11]; // if mixto, lo cuenta como valido para matutino, vespertino y nocturno
 	int estado;
+	int idServicio; // new || 
 } ent[10]; // Usaremos las 3 primeras letras para todas las estructuras
-
-struct servicios {
-	int id;
-	char idInstructor;
-	char servicio[20];
-	char rutina[20];
-} ser[10];
-
-struct registro {
-	int id;
-	char fechaRegistro[11];
-	char vigenciaRegistro[11];
-} reg[10];
 
 struct cliente {
 	int id;
+	char especialidadBus[13]; // Especialidad buscada || Si no coincide con una especialidad, te mostrará los servicios disponibles y te preguntará si quieres estar con otro servicio
 	char primerNombre[11];
 	char segundoNombre[11];
 	char apellidoMaterno[11];
@@ -86,10 +96,16 @@ struct cliente {
 	char telefono[11];
 	char direccion[16];
 	char turno[11];
-//	int idRegistro;
 	int estado;
-//	int idServicios;
+	int idEntrenador;	// new || Sugiere iDs de entrenadores que coincidan con tanto turno como especialidad, si no hay, te dice que no hay entrenadores con
+						// lo solicitado, pero sugiere registrarse, pero con su estado inactivo para tenerlo guardado en un futuro que se necesite. FIN
 } cli[10];
+
+struct registro { // El registro servirá para activar el cliente --
+	int idCliente; // Va a tomar la misma ID que la de cliente
+	char fechaRegistro[11];
+	char estado[9]; // Activo e inactivo --> Se asignarán al ver el estado del cliente `1 o 0`
+} reg[10];
 
 int main() {
 //	system("COLOR C1");
