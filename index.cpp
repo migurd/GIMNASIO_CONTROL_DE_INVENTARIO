@@ -657,16 +657,14 @@ void altaEntrenador(int id, int y) {
 	        exit(1);
 	    }
 	    while(fread(&ent[j], sizeof(struct entrenador), 1, fp) == 1){
-	    	if (strcmp(ent[i].estado, "Activo") == 0) { // Solo se imprimen los activos
+	    	if (strcmp(ent[j].estado, "Activo") == 0) { // Solo se imprimen los activos
 	    		i++;
 	    	}
 	    	j++;
 		}
-		fclose(fp);
-	    system("cls");
-		gotoxy(10,y+3);
 	    if (i < 10)
 	    {
+			gotoxy(10,y+3);
 		    printf("<====    Dar de Alta Entrenador    ====>");
 		    gotoxy(10,y+5);
 		    if (id == 0) {	
@@ -677,12 +675,6 @@ void altaEntrenador(int id, int y) {
 		    
 		    while (id == ent[p].id && option == 'Y' && strcmp(ent[p].estado, "Inactivo") == 0)
 		    {
-			 	fp = fopen("src/entrenadores.txt","r+");
-			    if(fp == NULL){
-			        gotoxy(10,y+6);
-			        printf("Error al abrir el archivo");
-			        exit(1);
-			    }
 			    temp = fopen("src/temporal.txt","w+");
 			    if(temp == NULL) {
 			        gotoxy(10,y+6);
