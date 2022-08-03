@@ -662,6 +662,7 @@ void altaEntrenador(int id, int y) {
 	    	}
 	    	j++;
 		}
+		system("cls");
 	    if (i < 10)
 	    {
 			gotoxy(10,y+3);
