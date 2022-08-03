@@ -12,26 +12,24 @@ Tirado Romero Juan Jose
 void gotoxy(int x,int y);
 void menu();
 void menuEntrenador();
-void menuServicios();
+void menuServicio();
 void menuRegistro();
 void menuCliente();
-
-void leerArchivoEntrenador();
-void guardarArchivoEntrenador(struct entrenador ent[]);
-
-void leerArchivoCliente();
-void guardarArchivoCliente(struct cliente cli[]);
 
 void addEntrenador();
 void consultarEntrenador();
 void consultarEntrenadorGeneral();
 void consultarEntrenadorEspecifico();
 void modificarEntrenador();
-void eliminarEntrenador();
+void altaBajaEntrenador();
+void altaEntrenador(int id, int y);
+void bajaEntrenador(int id, int y); // Eliminar, pero en baja
 void displayEntrenador(int p, int y);
-int idPosition(struct entrenador ent[], int idWanted);
+int idPositionEnt(struct entrenador ent[], int idWanted);
 int idRepetidaEnt(struct entrenador ent[], int idWanted);
 int idSiguienteEnt(struct entrenador ent[], int i);
+void leerArchivoEntrenador();
+void guardarArchivoEntrenador(struct entrenador ent[]);
 
 void addCliente();
 void consultarCliente();
@@ -43,8 +41,10 @@ void displayCliente(int p, int y);
 int idPositionCli(struct cliente cli[], int idWanted);
 int idRepetidaCli(struct cliente cli[], int idWanted);
 int idSiguienteCli(struct cliente ent[], int i);
+void leerArchivoCliente();
+void guardarArchivoCliente(struct cliente cli[]);
 
-void addServicios(int idEntrenador);
+void addServicio(int idEntrenador);
 
 char yesOrNo(int length);
 long nument(int lon);
@@ -112,7 +112,7 @@ struct cliente {
 						// lo solicitado, pero sugiere registrarse, pero con su estado inactivo para tenerlo guardado en un futuro que se necesite. FIN
 	// <----   ----------   ----> Esto primero es más relevante en un entrenador
 	
-	char estado[9]; // Activo e inactivo 	|| 'Inactivo' por defecto, pero te pedirá darlo de alta
+	int estado; // Activo e inactivo 	|| 'Inactivo' por defecto, pero te pedirá darlo de alta
 } cli[10];
 
 // Registro es donde se dará de alta el cliente  || En este solamente se podrán modificar 
@@ -181,7 +181,7 @@ void menu() {
 	} while (option != 5);
 }
 
-void menuServicios() {
+void menuServicio() {
 	system("cls");
 	printf("WIP");
 	getch();
@@ -201,7 +201,7 @@ void menuEntrenador() {
 		gotoxy(40, 10);
 		printf("3. Modificar", 163);
 		gotoxy(40, 11);
-		printf("4. Eliminar", 163);
+		printf("4. Alta / Baja", 163);
 		gotoxy(40, 12);
 		printf("5. Regresar", 163);
 		
@@ -220,7 +220,7 @@ void menuEntrenador() {
 				modificarEntrenador();
 				break;
 			case 4:
-				eliminarEntrenador();
+				altaBajaEntrenador();
 				break;
 			case 5:
 				break;
@@ -285,8 +285,6 @@ void menuRegistro() {
 	
 }
 
-
-
 void addEntrenador() {
 	FILE *fp;
     char option = 'Y';
@@ -303,7 +301,7 @@ void addEntrenador() {
 	    }
     	system("cls");
 	    while(fread(&ent[j], sizeof(struct entrenador), 1, fp) == 1){
-	    	if (ent[j].estado == 'Activo') { // Solo se imprimen los activos
+	    	if (strcmp(ent[j].estado, "Activo") == 0) { // Solo se imprimen los activos
 	    		i++;
 	    	}
 	    	j++;
@@ -320,7 +318,7 @@ void addEntrenador() {
 	        if (idRepetidaEnt(ent, ent[j].id) == 1) { // Si la ID es repetida, devuelve 1
 	        	system("cls");
 	        	gotoxy(10, 5);
-	        	p = idPosition(ent, ent[j].id);
+	        	p = idPositionEnt(ent, ent[j].id);
 				printf("La id `%i` es repetida: ", ent[p].id);
 				displayEntrenador(p, 8);
 				gotoxy(10, 15);
@@ -340,32 +338,39 @@ void addEntrenador() {
 				return;
 			}
 	        gotoxy(15,8);
-	        printf("Especialidad: ");
-	        valitext(12, ent[j].especialidad);
-	        gotoxy(15,9);
 	        printf("Primer nombre: ");
 	        valitext(10, ent[j].primerNombre);
-			gotoxy(15,10);
+			gotoxy(15,9);
 	        printf("Segundo nombre: ");
 	        valitext(10, ent[j].segundoNombre);
-	        gotoxy(15,11);
+	        gotoxy(15,10);
 	        printf("Apellido Paterno: ");
 	        valitext(10, ent[j].apellidoPaterno);
-	        gotoxy(15,12);
+	        gotoxy(15,11);
 	        printf("Apellido Materno: ");
 	        valitext(10, ent[j].apellidoMaterno);
-			gotoxy(15,13);
+			gotoxy(15,12);
 			printf("Tel%cfono: ", 130);
 	        valiNum(ent[j].telefono, 10);
-			gotoxy(15,14);
-			printf("Turno: ", 130);
-	        valitext(10, ent[j].turno);
-	        ent[j].estado = 'Activo';
+	        strcpy(ent[j].estado, "Inactivo"); // Son por defecto de baja
+	        strcpy(ent[j].especialidad, "S/N");
+	    	strcpy(ent[j].turno, "S/N");
 	        fwrite(&ent[j], sizeof(struct entrenador), 1, fp);
-	        gotoxy(15,16);
+	        gotoxy(15,15);
 			printf("%cEntrenador a%cadido exitosamente!", 173, 164);
 	        getch();
+	        gotoxy(15,18);
+	        printf("%cDesea darlo de alta? (Y / N): ", 168);
+	        option = yesOrNo(1);
+	        if (option == 'Y') {
+	        	fclose(fp);
+	        	altaEntrenador(ent[j].id, 0);
+			}
 			gotoxy(15,18);
+			if(option == 'Y') {
+				system("cls");
+				gotoxy(10, 5);
+			}
 	        printf("%cDesea a%cadir otro entrenador? (Y / N): ", 168, 164);
 	        option = yesOrNo(1);
 	        fclose(fp);
@@ -416,7 +421,6 @@ void consultarEntrenador() {
 				break;
 		}
 	} while (option != 3);
-	
 }
 
 void consultarEntrenadorGeneral() {
@@ -426,9 +430,9 @@ void consultarEntrenadorGeneral() {
     gotoxy(36,2);
     printf("<====    Consulta General Entrenador    ====>");
     gotoxy(10,5);
-    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
+    printf("ID   P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Especialidad    Turno       Estado", 130);
     gotoxy(10,6);
-    printf("_______________________________________________________________________________________________________");
+    printf("__________________________________________________________________________________________________________");
     fp = fopen("src/entrenadores.txt","r+");
     if(fp == NULL){
         gotoxy(10,8);
@@ -437,9 +441,9 @@ void consultarEntrenadorGeneral() {
     }
     j=8;
     while(fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1){
-    	if (ent[i].estado == 1) { // Solo se imprimen los activos
+    	if (strcmp(ent[i].estado, "Activo") == 0) { // Solo se imprimen los activos
     		gotoxy(10, j);
-	        printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%-12s%s", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno, ent[i].estado);
+	        printf("%-5d%-12s%-12s%-13s%-13s%-13s%-16s%-12s%s", ent[i].id, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].especialidad, ent[i].turno, ent[i].estado);
 	        i++;
 	        j++;
 		}
@@ -459,7 +463,7 @@ void consultarEntrenadorEspecifico() {
 	int condition = 1;
 	char option='Y';
 	FILE *fp;
-	p = idPosition(ent, cod); 
+	p = idPositionEnt(ent, cod); 
 	while(option == 'Y'){
 		system("cls");
 		gotoxy(38,2);
@@ -474,15 +478,10 @@ void consultarEntrenadorEspecifico() {
 				system("cls");
 				gotoxy(38,2);
 			    printf("<====     Consulta Espec%cfica Entrenador     ====>", 161);
-			    gotoxy(10,5);
-			    printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
-			    gotoxy(10,6);
-			    printf("_______________________________________________________________________________________________________");
-				gotoxy(10, 8);
-	        	printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%-12s%s", ent[i].id, ent[i].especialidad, ent[i].primerNombre, ent[i].segundoNombre, ent[i].apellidoPaterno, ent[i].apellidoMaterno, ent[i].telefono, ent[i].turno, ent[i].estado);
-				gotoxy(10,12);
+			    displayEntrenador(i, 5);
 				getch();
-		        printf("%cDesea buscar otro entrenador? (Y / N): ", 168, 164);
+		        gotoxy(10, 12);
+				printf("%cDesea buscar otro entrenador? (Y / N): ", 168, 164);
 		        option = yesOrNo(1);
 		        condition = 0;
 		        fclose(fp); // ALGO CLAVE ERA QUE CERRARAN ESTOS
@@ -519,15 +518,15 @@ void modificarEntrenador() {
 	    gotoxy(10,5);
 	    printf("Inserta la ID de entrenador a modificar: ");
 	    idEntrenador = nument(3);
-	    p = idPosition(ent, idEntrenador);
-	    if (ent[p].id == idEntrenador && ent[p].estado == 'Activo')
+	    p = idPositionEnt(ent, idEntrenador);
+	    if (ent[p].id == idEntrenador && strcmp(ent[p].estado, "Activo") == 0)
 	    {
-	    	displayEntrenador(p, 7);
+	    	displayEntrenador(p, 8);
 		    gotoxy(10,14);
 			printf("%cEst%c seguro que quiere editar el usuario con la ID `%i`? (Y / N): ", 168, 160, idEntrenador);
 		    option = yesOrNo(1);
 		}
-		while(idEntrenador == ent[p].id && ent[p].estado == 'Activo') // Puedes modificar mientras la ID coincida y el entrenador se encuentre activo
+		while(idEntrenador == ent[p].id && strcmp(ent[p].estado, "Activo") == 0) // Puedes modificar mientras la ID coincida y el entrenador se encuentre activo
 	    {
 	    	system("cls");
 	    	if (option == 'N')
@@ -544,32 +543,26 @@ void modificarEntrenador() {
 		        printf("Error abriendo el archivo");
 		        exit(1);
 		    }
-        	displayEntrenador(p, 2);
-            gotoxy(10,8);
-	        printf("Especialidad: ");
-	        valitext(12, ent[p].especialidad);
-	        gotoxy(10,9);
+        	displayEntrenador(p, 4);
+            gotoxy(10,10);
 	        printf("Primer nombre: ");
 	        valitext(10, ent[p].primerNombre);
-			gotoxy(10,10);
+	        gotoxy(10,11);
 	        printf("Segundo nombre: ");
 	        valitext(10, ent[p].segundoNombre);
-	        gotoxy(10,11);
+			gotoxy(10,12);
 	        printf("Apellido Paterno: ");
 	        valitext(10, ent[p].apellidoPaterno);
-	        gotoxy(10,12);
+	        gotoxy(10,13);
 	        printf("Apellido Materno: ");
 	        valitext(10, ent[p].apellidoMaterno);
-			gotoxy(10,13);
+	        gotoxy(10,14);
 			printf("Tel%cfono: ", 130);
 	        valiNum(ent[p].telefono, 10);
-			gotoxy(10,14);
-			printf("Turno: ", 130);
-	        valitext(10, ent[p].turno);
 	        gotoxy(10,16);
 	        printf("%cDesea guardar los cambios? (Y / N): ", 168);
 	        option = yesOrNo(1);
-			gotoxy(10,18);
+			gotoxy(10,19);
 			// Primero guarda la variable cambiada y la mueve al principio,
 			// entonces, anota el resto menos la cambiada.
 			if(option == 'Y')
@@ -611,45 +604,192 @@ void modificarEntrenador() {
     
 }
 
-void eliminarEntrenador() {
-	int id, i, p; // P = position
+void altaBajaEntrenador() {
+	int option = 0;
+	
+	do {
+		system("cls");
+		gotoxy(40, 5);
+		printf("<====    Alta / Baja Entrenador    ====>");
+		gotoxy(40, 8);
+		printf("1. Alta");
+		gotoxy(40, 9);
+		printf("2. Baja", 161);
+		gotoxy(40, 10);
+		printf("3. Regresar");
+		
+		gotoxy(44, 15);
+		printf("> > Elige una opci%cn: ", 162);
+		option = nument(1);
+		leerArchivoEntrenador();
+		switch (option) {
+			case 1:
+				altaEntrenador(0, 0);
+				break;
+			case 2:
+				bajaEntrenador(0, 0);
+				break;
+			case 3:
+				break;
+			default:
+				system("cls");
+				gotoxy(40, 10);
+				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
+				Sleep(300);
+				break;
+		}
+		guardarArchivoEntrenador(ent);
+	} while (option != 3);	
+}
+
+void altaEntrenador(int id, int y) {
+	FILE *fp,*temp;
+    int i = 0, j = 0, p = 0;
+	char option = 'Y';
+    while(option == 'Y')
+    {
+    	i = 0, j = 0;
+    	fp = fopen("src/entrenadores.txt", "r+");
+	    if(fp == NULL){
+	    	system("cls");
+	        gotoxy(10,5);
+	        printf("Error abriendo el archivo");
+	        exit(1);
+	    }
+	    while(fread(&ent[j], sizeof(struct entrenador), 1, fp) == 1){
+	    	if (strcmp(ent[i].estado, "Activo") == 0) { // Solo se imprimen los activos
+	    		i++;
+	    	}
+	    	j++;
+		}
+		fclose(fp);
+	    system("cls");
+		gotoxy(10,y+3);
+	    if (i < 10)
+	    {
+		    printf("<====    Dar de Alta Entrenador    ====>");
+		    gotoxy(10,y+5);
+		    if (id == 0) {	
+			    printf("Insertar la ID a dar de alta: ");
+			    id = nument(3);
+			}
+		    p = idPositionEnt(ent, id);
+		    
+		    while (id == ent[p].id && option == 'Y' && strcmp(ent[p].estado, "Inactivo") == 0)
+		    {
+			 	fp = fopen("src/entrenadores.txt","r+");
+			    if(fp == NULL){
+			        gotoxy(10,y+6);
+			        printf("Error al abrir el archivo");
+			        exit(1);
+			    }
+			    temp = fopen("src/temporal.txt","w+");
+			    if(temp == NULL) {
+			        gotoxy(10,y+6);
+			        printf("Error al abrir el archivo");
+			        exit(1);
+		    	}
+				displayEntrenador(p, y+8);
+		    	strcpy(ent[p].estado, "Activo"); // El estado queda desactivo y ya no se mostrarï¿½ o tomarï¿½ en cuenta
+		    	strcpy(ent[p].especialidad, "\0");
+	    		strcpy(ent[p].turno, "\0");
+				gotoxy(10,y+14);
+				printf("Especialidad: ");
+		        valitext(12, ent[p].especialidad);
+		        gotoxy(10,y+15);
+		        printf("Turno: ");
+		        valitext(10, ent[p].turno);
+				gotoxy(10,y+17);
+				printf("%cGuardar los cambios y dar de alta el entrenador con la ID `%i`? (Y / N): ", 168, id);
+			    option = yesOrNo(1);
+			    i = 0; // Se pone para resetear el conteo donde se añaden los entrenadores
+			 	if(option == 'Y')
+					fwrite(&ent[p], sizeof(struct entrenador), 1, temp); // Primero se anota la reciï¿½n guardada
+				while (fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1) {
+					if (ent[i].id != ent[p].id) { // Condiciï¿½n para que no se repita la misma id despuï¿½s del cambio
+		    			fwrite(&ent[i], sizeof(struct entrenador), 1, temp);
+		    		}
+		    		i++;
+		    	}
+		    	fclose(fp);
+				fclose(temp);
+				gotoxy(10,y+20);
+				if(option == 'Y')
+				{
+					remove("src/entrenadores.txt");
+				    rename("src/temporal.txt", "src/entrenadores.txt");
+			    	printf("%cEntrenador dado de alta exitosamente!", 173);
+				}
+				else {
+					printf("No se dio de alta", 163);
+					remove("src/temporal.txt");
+				}
+		        getch();
+	            return;
+			}
+			system("cls");
+			gotoxy(10,4);
+			printf("La ID `%i` ya se dio de alta.", id);
+			gotoxy(10,5);
+			printf("%cDesea buscar otro entrenador para dar de alta? (Y / N): ", 168, 164);
+			option = yesOrNo(1);
+			if (option == 'N')
+				return;	
+		}
+		else {
+			system("cls");
+			gotoxy(10, 5);
+			printf("No hay espacio de almacentamiento para dar m%cs entrenadores de alta. :(", 160);
+			fclose(fp);
+			getch();
+			return;
+		}
+		
+	}
+}
+
+void bajaEntrenador(int id, int y) {
+	int i, p; // P = position
 	char option = 'Y';
     FILE *fp,*temp;
     do {
 	    system("cls");
-		gotoxy(10,3);
-	    printf("<====    Eliminar entrenador    ====>");
-	    gotoxy(10,5);
-	    printf("Insertar la ID a eliminar: ");
-	    id = nument(3);
-	    p = idPosition(ent, id);
+		gotoxy(10,y+3);
+		
+	    printf("<====    Dar de Baja Entrenador    ====>");
+	    gotoxy(10,y+5);
+	    if (id == NULL) {	
+		    printf("Insertar la ID a dar de baja: ");
+		    id = nument(3);
+		}
+	    p = idPositionEnt(ent, id);
 	    
-	    while (id == ent[p].id && option == 'Y' && ent[p].estado == 'Activo')
+	    while (id == ent[p].id && option == 'Y' && strcmp(ent[p].estado, "Activo") == 0)
 	    {
 		    fp = fopen("src/entrenadores.txt","r+");
 		    if(fp == NULL){
-		        gotoxy(10,6);
+		        gotoxy(10,y+6);
 		        printf("Error al abrir el archivo");
 		        exit(1);
 		    }
 		    temp = fopen("src/temporal.txt","w+");
 		    if(temp == NULL) {
-		        gotoxy(10,6);
+		        gotoxy(10,y+6);
 		        printf("Error al abrir el archivo");
 		        exit(1);
 	    	}
-			displayEntrenador(p, 5);
-			gotoxy(10,12);
-	    	ent[p].estado = 'Inactivo'; // El estado queda desactivo y ya no se mostrarï¿½ o tomarï¿½ en cuenta
-			printf("%cEst%cs seguro que quiere eliminar el usuario con la ID `%i`? (Y / N): ", 168, 160, id);
+			displayEntrenador(p, y+8);
+	    	strcpy(ent[p].estado, "Inactivo"); // El estado queda desactivo y ya no se mostrarï¿½ o tomarï¿½ en cuenta
+	    	strcpy(ent[p].especialidad, "S/N");
+    		strcpy(ent[p].turno, "S/N");
+			gotoxy(10,y+14);
+			printf("Ad%vertencia: Si se da de baja el usuario perder%c su especialidad y turno", 160, 160);
+			gotoxy(10,y+16);
+			printf("%cEst%cs seguro que quiere dar de baja el usuario con la ID `%i`? (Y / N): ", 168, 160, id);
 		    option = yesOrNo(1);
 		 	if(option == 'Y')
 				fwrite(&ent[p], sizeof(struct entrenador), 1, temp); // Primero se anota la reciï¿½n guardada
 			while (fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1) {
-			    /*printf("\n%i", ent[i].id);
-			    getch();
-			    printf("\n%i", ent[p].id);
-			    getch();*/
 				if (ent[i].id != ent[p].id) { // Condiciï¿½n para que no se repita la misma id despuï¿½s del cambio
 	    			fwrite(&ent[i], sizeof(struct entrenador), 1, temp);
 	    		}
@@ -657,7 +797,7 @@ void eliminarEntrenador() {
 	    	}
 	    	fclose(fp);
 			fclose(temp);
-			gotoxy(10,15);
+			gotoxy(10,y+19);
 			if(option == 'Y')
 			{
 				remove("src/entrenadores.txt");
@@ -673,23 +813,40 @@ void eliminarEntrenador() {
 		}
 		system("cls");
 		gotoxy(10,4);
-		printf("La ID `%i` no se encuentra registrada o ya ha sido eliminada.", id);
+		printf("La ID `%i` no se encuentra registrada o ya ha sido dado de baja.", id);
 		gotoxy(10,5);
-		printf("%cDesea buscar otro entrenador para eliminar? (Y / N): ", 168, 164);
+		printf("%cDesea buscar otro entrenador para dar de baja? (Y / N): ", 168, 164);
 		option = yesOrNo(1);
 		if (option == 'N')
 			return;
 	} while (option == 'Y');
 }
-	
+
+void bajaSinPreguntarEntrenador() {
+	int i, p; // P = position
+    FILE *fp,*temp;
+    strcpy(ent[p].estado, "\0");
+    strcpy(ent[p].especialidad, "\0");
+    strcpy(ent[p].turno, "\0");
+	fwrite(&ent[p], sizeof(struct entrenador), 1, temp); // Primero se anota la reciï¿½n guardada
+	while (fread(&ent[i], sizeof(struct entrenador), 1, fp) == 1) {
+		if (ent[i].id != ent[p].id) { // Condiciï¿½n para que no se repita la misma id despuï¿½s del cambio
+			fwrite(&ent[i], sizeof(struct entrenador), 1, temp);
+		}
+		i++;
+	}
+	fclose(fp);
+	fclose(temp);
+}
+
 void displayEntrenador(int p, int y) {
 	// y representa la parte de Gotoxy para que baje
 	gotoxy(10,y);
-	printf("ID  Especialidad    P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Turno       Estado", 130, 162);
+	printf("ID   P. Nombre   S. Nombre   Apellido P.  Apellido M.  Tel%cfono     Especialidad    Turno       Estado", 130);
 	gotoxy(10,y+1);
-	printf("_______________________________________________________________________________________________________");
+	printf("__________________________________________________________________________________________________________");
 	gotoxy(10, y+3);
-	printf("%-4d%-16s%-12s%-12s%-13s%-13s%-13s%-12s%s", ent[p].id, ent[p].especialidad, ent[p].primerNombre, ent[p].segundoNombre, ent[p].apellidoPaterno, ent[p].apellidoMaterno, ent[p].telefono, ent[p].turno, ent[p].estado);
+	printf("%-5d%-12s%-12s%-13s%-13s%-13s%-16s%-12s%s", ent[p].id, ent[p].primerNombre, ent[p].segundoNombre, ent[p].apellidoPaterno, ent[p].apellidoMaterno, ent[p].telefono, ent[p].especialidad, ent[p].turno, ent[p].estado);
 }
 
 void leerArchivoEntrenador(){
@@ -811,7 +968,7 @@ void addCliente() {    //Quite el int entrenadores y el int servicios por el mom
 	    }
     	system("cls");
 	    while(fread(&cli[j], sizeof(struct cliente), 1, fp) == 1){
-	    	if (cli[j].estado == 'Activo') { // Solo se imprimen los activos
+	    	if (cli[j].estado == 1) { // Solo se imprimen los activos
 	    		i++;
 	    	}
 	    	j++;
@@ -873,7 +1030,7 @@ void addCliente() {    //Quite el int entrenadores y el int servicios por el mom
 			gotoxy(15,14);
 			printf("Turno: ", 130);
 			valitext(10, cli[j].turno);
-			cli[j].estado = 'Activo';
+			cli[j].estado = 1;
 			fwrite(&cli[j], sizeof(struct cliente), 1, fp);
 			gotoxy(15,16);
 			printf("%cCliente a%cadido exitosamente!", 173, 164);
@@ -951,7 +1108,7 @@ void consultarClienteGeneral(){
     while(fread(&cli[i], sizeof(struct cliente), 1, fp) == 1){
     	if (cli[i].estado == 1){
     		gotoxy(10, j);
-			printf("%-5d%-13s%-12s%-14s%-13s%-13s%-17s%-12s%s", cli[i].id, cli[i].primerNombre, cli[i].segundoNombre, cli[i].apellidoPaterno, cli[i].apellidoMaterno, cli[i].telefono, cli[i].direccion, cli[i].turno, cli[i].estado);
+			printf("%-5d%-13s%-12s%-14s%-13s%-13s%-17s%-12s%d", cli[i].id, cli[i].primerNombre, cli[i].segundoNombre, cli[i].apellidoPaterno, cli[i].apellidoMaterno, cli[i].telefono, cli[i].direccion, cli[i].turno, cli[i].estado);
      		i++;
         	j++;
 		}
@@ -989,7 +1146,7 @@ void consultarClienteEspecifico(){
 			    gotoxy(10,6);
 			    printf("_____________________________________________________________________________________________________________");
 				gotoxy(10, 8);
-	        	printf("%-5d%-13s%-12s%-14s%-13s%-13s%-17s%-12s%s", cli[i].id, cli[i].primerNombre, cli[i].segundoNombre, cli[i].apellidoPaterno, cli[i].apellidoMaterno, cli[i].telefono, cli[i].direccion, cli[i].turno, cli[i].estado);
+	        	printf("%-5d%-13s%-12s%-14s%-13s%-13s%-17s%-12s%d", cli[i].id, cli[i].primerNombre, cli[i].segundoNombre, cli[i].apellidoPaterno, cli[i].apellidoMaterno, cli[i].telefono, cli[i].direccion, cli[i].turno, cli[i].estado);
 				getch();
 				gotoxy(10,12);
 		        printf("%cDesea buscar otro cliente? (Y / N): ", 168, 164);
@@ -1029,14 +1186,14 @@ void modificarCliente(){
 	    printf("Inserta la ID del cliente a modificar: ");
 	    idCliente = nument(3);
 	    p = idPositionCli(cli, idCliente);
-	    if (cli[p].id == idCliente && cli[p].estado == 'Activo')
+	    if (cli[p].id == idCliente && cli[p].estado == 1)
 	    {
 	    	displayCliente(p, 7);
 		    gotoxy(10,14);
 			printf("%cEst%c seguro que quiere editar el cliente con la ID `%i`? (Y / N): ", 168, 160, idCliente);
 		    option = yesOrNo(1);
 		}
-		while(idCliente == cli[p].id && cli[p].estado == 'Activo') // Puedes modificar mientras la ID coincida y el entrenador se encuentre activo
+		while(idCliente == cli[p].id && cli[p].estado == 1) // Puedes modificar mientras la ID coincida y el entrenador se encuentre activo
 	    {
 	    	system("cls");
 	    	if (option == 'N')
@@ -1133,7 +1290,7 @@ void eliminarCliente(){
 	    id = nument(3);
 	    p = idPositionCli(cli, id);
 	    
-	    while (id == cli[p].id && option == 'Y' && cli[p].estado == 'Activo')
+	    while (id == cli[p].id && option == 'Y' && cli[p].estado == 1)
 	    {
 		    fp = fopen("src/clientes.txt","r+");
 		    if(fp == NULL){
@@ -1149,7 +1306,7 @@ void eliminarCliente(){
 	    	}
 			displayCliente(p, 5);
 			gotoxy(10,12);
-	    	cli[p].estado = 'Inactivo'; // El estado queda desactivo y ya no se mostrarï¿½ o tomarï¿½ en cuenta
+	    	cli[p].estado = 0; // El estado queda desactivo y ya no se mostrarï¿½ o tomarï¿½ en cuenta
 			printf("%cEst%cs seguro que quiere eliminar el cliente con la ID `%i`? (Y / N): ", 168, 160, id);
 		    option = yesOrNo(1);
 		 	if(option == 'Y')
@@ -1198,7 +1355,7 @@ void displayCliente(int p, int y){
 	gotoxy(10,y+1);
 	printf("_____________________________________________________________________________________________________________");
 	gotoxy(10, y+3);
-	printf("%-5d%-13s%-12s%-14s%-13s%-13s%-17s%-12s%s", cli[p].id, cli[p].primerNombre, cli[p].segundoNombre, cli[p].apellidoPaterno, cli[p].apellidoMaterno, cli[p].telefono, cli[p].direccion, cli[p].turno, cli[p].estado);
+	printf("%-5d%-13s%-12s%-14s%-13s%-13s%-17s%-12s%d", cli[p].id, cli[p].primerNombre, cli[p].segundoNombre, cli[p].apellidoPaterno, cli[p].apellidoMaterno, cli[p].telefono, cli[p].direccion, cli[p].turno, cli[p].estado);
 }
 
 void leerArchivoCliente(){
@@ -1475,7 +1632,7 @@ char yesOrNo(int length) {
 	} while(option != 89 || option != 78);
 }
 
-int idPosition(struct entrenador ent[], int idWanted) {
+int idPositionEnt(struct entrenador ent[], int idWanted) {
 	FILE *fp;
     fp = fopen("src/entrenadores.txt","r+");
     if(fp == NULL){
