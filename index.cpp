@@ -582,7 +582,7 @@ void modificarEntrenador() {
 		    	printf("%cEntrenador modificado exitosamente!", 173);
 			}
 			else {
-				printf("No se hizo ning%cn cambio", 163);
+				printf("No se hizo ning%cn cambio.", 163);
 				remove("src/temporal.txt");
 			}
 	        getch();
@@ -593,7 +593,7 @@ void modificarEntrenador() {
     	{
     		system("cls");
 			gotoxy(10,4);
-			printf("La ID `%i` no se encuentra registrada o ya ha sido eliminada.", idEntrenador);
+			printf("La ID `%i` necesita estar dada de alta para ser modificada.", idEntrenador);
 			gotoxy(10,7);
 			printf("%cDesea buscar otro entrenador para modificar? (Y / N): ", 168, 164);
 			option = yesOrNo(1);
@@ -721,7 +721,7 @@ void altaEntrenador(int id, int y) {
 			    	printf("%cEntrenador dado de alta exitosamente!", 173);
 				}
 				else {
-					printf("No se dio de alta", 163);
+					printf("No se dio de alta el entrenador con la ID `%i`.", id);
 					remove("src/temporal.txt");
 				}
 		        getch();
@@ -783,9 +783,9 @@ void bajaEntrenador(int id, int y) {
 	    	strcpy(ent[p].especialidad, "S/N");
     		strcpy(ent[p].turno, "S/N");
 			gotoxy(10,y+14);
-			printf("Ad%vertencia: Si se da de baja el usuario perder%c su especialidad y turno", 160, 160);
+			printf("Ad%vertencia: Si se da de baja el usuario perder%c su especialidad y turno.", 160, 160);
 			gotoxy(10,y+16);
-			printf("%cEst%cs seguro que quiere dar de baja el usuario con la ID `%i`? (Y / N): ", 168, 160, id);
+			printf("%cEst%cs seguro que quiere dar de baja el entrenador con la ID `%i`? (Y / N): ", 168, 160, id);
 		    option = yesOrNo(1);
 		 	if(option == 'Y')
 				fwrite(&ent[p], sizeof(struct entrenador), 1, temp); // Primero se anota la reci�n guardada
@@ -802,10 +802,10 @@ void bajaEntrenador(int id, int y) {
 			{
 				remove("src/entrenadores.txt");
 			    rename("src/temporal.txt", "src/entrenadores.txt");
-		    	printf("%cEntrenador eliminado exitosamente!", 173);
+		    	printf("%cEntrenador dado de baja exitosamente!", 173);
 			}
 			else {
-				printf("No se hizo ning%cn cambio", 163);
+				printf("No se dio de baja el entrenador con la ID `%i`.", id);
 				remove("src/temporal.txt");
 			}
 	        getch();
