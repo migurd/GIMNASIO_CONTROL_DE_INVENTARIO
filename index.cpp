@@ -662,7 +662,10 @@ void altaEntrenador(int id, int y) {
 	    	}
 	    	j++;
 		}
-		system("cls");
+		fclose(fp);
+	    system("cls");
+		printf("%i", i);
+		getch();
 	    if (i < 10)
 	    {
 			gotoxy(10,y+3);
@@ -676,6 +679,13 @@ void altaEntrenador(int id, int y) {
 		    
 		    while (id == ent[p].id && option == 'Y' && strcmp(ent[p].estado, "Inactivo") == 0)
 		    {
+		    	fp = fopen("src/entrenadores.txt", "r+");
+			    if(fp == NULL){
+			    	system("cls");
+			        gotoxy(10,5);
+			        printf("Error abriendo el archivo");
+			        exit(1);
+			    }
 			    temp = fopen("src/temporal.txt","w+");
 			    if(temp == NULL) {
 			        gotoxy(10,y+6);
@@ -684,8 +694,6 @@ void altaEntrenador(int id, int y) {
 		    	}
 				displayEntrenador(p, y+8);
 		    	strcpy(ent[p].estado, "Activo"); // El estado queda desactivo y ya no se mostrar� o tomar� en cuenta
-		    	strcpy(ent[p].especialidad, "\0");
-	    		strcpy(ent[p].turno, "\0");
 				gotoxy(10,y+14);
 				printf("Especialidad: ");
 		        valitext(12, ent[p].especialidad);
@@ -733,7 +741,6 @@ void altaEntrenador(int id, int y) {
 			system("cls");
 			gotoxy(10, 5);
 			printf("No hay espacio de almacentamiento para dar m%cs entrenadores de alta. :(", 160);
-			fclose(fp);
 			getch();
 			return;
 		}
