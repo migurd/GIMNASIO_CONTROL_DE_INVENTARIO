@@ -162,6 +162,7 @@ struct registro {
 	int id; // Va a tomar la misma ID que la de cliente o de entrenador
 	char fechaRegistro[11];
 	char ultimoRegistro[11]; // Cuando se dé se podrá asignar una fecha de última suscripción a actividad
+	char proxRegistro[11]; // Próxima ocasión/fecha en donde se tendrá que hacer algo (pagos, citas, ...)
 	// Mientras turno 
 } entReg[10], cliReg[10]; // registro_ent.txt || registro_cli.txt
 
