@@ -62,7 +62,7 @@ int idPositionCli(struct cliente cli[], int idWanted);
 int idRepetidaCli(struct cliente cli[], int idWanted);
 int idSiguienteCli(struct cliente ent[], int i);
 void leerArchivoCliente();
-void guardarArchivoCliente(struct cliente cli[]);
+void guardarArchivoCliente(struct cliente cliReg[]);
 
 // registro entrenadores
 void addRegistroEnt(int idEntrenador);
@@ -103,7 +103,7 @@ void valifec(char *pfecha);
 void valiTelefono(char *pnom, int length);
 
 // Un negocio primero necesita algo que ofrecer (SERVICIOS), en segundo lugar, empleados (ENTRENADORES),
-// y finalmentem, un negocio necesita clientes para mantenerse a flote, y los CLIENTES necesitan
+// y finalmentem, un negocio necesita clientes para mantenerse a flote, ys los CLIENTES necesitan
 // un tipo de registro o suscripción para estar activos o estar inactivos temporalmente (REGISTRO). FIN
 // ---------------------------------------------------------------------------------------------------------
 
@@ -170,8 +170,8 @@ struct cliente {
 
 struct registro {
 	int id; // Va a tomar la misma ID que la de cliente o de entrenador
-	char fechaRegistro[10];
-	char altaRegistro[10]; // Se activa cuando fue dada de alta por última vez
+	char fechaRegistro[11];
+	char altaRegistro[11]; // Se activa cuando fue dada de alta por última vez
 	char estado[9];
 	// Mientras turno 
 } entReg[10], cliReg[10]; // registro_ent.txt || registro_cli.txt
@@ -304,6 +304,7 @@ void menuEntrenador() {
 		printf("> > Elige una opci%cn: ", 162);
 		option = nument(1);
 		leerArchivoEntrenador();
+		guardarArchivoRegistroCli(cliReg);
 		switch (option) {
 			case 1:
 				addEntrenador();
@@ -396,10 +397,10 @@ void menuRegistro() {
 		leerArchivoCliente();
 		switch (option) {
 			case 1:
-				consultarRegistroEnt();
+				menuRegistroEnt();
 				break;
 			case 2:
-				modificarCliente();
+				menuRegistroCli();
 				break;
 			case 3:
 				break;
@@ -419,18 +420,19 @@ void menuRegistroEnt() {
 	do {
 		system("cls");
 		gotoxy(40, 5);
-		printf("<====     Men%c Registro     ====>", 163);
+		printf("<====     Men%c Registro Entrenador     ====>", 163);
 		gotoxy(40, 8);
-		printf("1. Entrenadores");
+		printf("1. Consultar");
 		gotoxy(40, 9);
-		printf("2. Clientes");
+		printf("2. Modificar");
 		gotoxy(40, 10);
 		printf("3. Regresar");
 		
 		gotoxy(44, 15);
 		printf("> > Elige una opci%cn: ", 162);
 		option = nument(1);
-		leerArchivoCliente();
+		leerArchivoRegistroEnt();
+		guardarArchivoRegistroEnt(entReg);
 		switch (option) {
 			case 1:
 				consultarRegistroEnt();
@@ -446,7 +448,7 @@ void menuRegistroEnt() {
 				Sleep(300);
 				break;
 		}
-		guardarArchivoCliente(cli);
+		guardarArchivoRegistroEnt(entReg);
 	} while (option != 3);
 }
 
@@ -456,7 +458,7 @@ void menuRegistroCli() {
 	do {
 		system("cls");
 		gotoxy(40, 5);
-		printf("<====     Men%c Registro     ====>", 163);
+		printf("<====     Men%c Registro Cliente    ====>", 163);
 		gotoxy(40, 8);
 		printf("1. Consultar");
 		gotoxy(40, 9);
@@ -467,7 +469,8 @@ void menuRegistroCli() {
 		gotoxy(44, 15);
 		printf("> > Elige una opci%cn: ", 162);
 		option = nument(1);
-		leerArchivoCliente();
+		leerArchivoRegistroCli();
+		guardarArchivoRegistroCli(cliReg);
 		switch (option) {
 			case 1:
 				consultarRegistroCli();
@@ -483,7 +486,7 @@ void menuRegistroCli() {
 				Sleep(300);
 				break;
 		}
-		guardarArchivoCliente(cli);
+		guardarArchivoRegistroCli(cliReg);
 	} while (option != 3);
 }
 
@@ -593,9 +596,11 @@ void addServicio() {
 				system("cls");
 				gotoxy(10, 5);
 			}
+	        fclose(fp);
 	        printf("%cDesea a%cadir otro servicio? (Y / N): ", 168, 164);
 	        option = yesOrNo(1);
-	        fclose(fp);
+	        if (option == 'Y')
+	        	guardarArchivoServicio(ser);
 		}
 		else {
 			gotoxy(10, 5);
@@ -673,7 +678,7 @@ void consultarServicioGeneral() {
     }
     fclose(fp);
     getch();
-    gotoxy (10, j+1);
+    gotoxy (10, j+2);
     printf("%cDesea ver los servicios inactivos tambi%cn? (Y / N): ", 168, 130);
 	option = yesOrNo(1);
 	if (option == 'Y') {
@@ -700,8 +705,10 @@ void consultarServicioGeneral() {
 			}
     	}
 	}
+	else
+		j += 2;
     fclose(fp);
-    gotoxy(10, j+3);
+    gotoxy(10, j+2);
     printf("Presiona cualquier tecla para salir");
     getch();
     
@@ -958,7 +965,7 @@ void altaServicio(int id, int y) {
 			    	printf("%cServicio dado de alta exitosamente!", 173);
 				}
 				else {
-					printf("No se dio de alta el servicio con la ID `%i`.", id);
+					printf("No se dio de alta el servicio con la ID `%i`.", ser[p].id);
 					remove("src/temporal.txt");
 				}
 		        getch();
@@ -966,7 +973,7 @@ void altaServicio(int id, int y) {
 			}
 			system("cls");
 			gotoxy(10,4);
-			printf("La ID `%i` no est%ca registrado o ya se dio de alta.", id, 160);
+			printf("La ID `%i` no est%ca registrado o ya se dio de alta.", ser[p].id, 160);
 			gotoxy(10,5);
 			printf("%cDesea buscar otro servicio para dar de alta? (Y / N): ", 168, 164);
 			option = yesOrNo(1);
@@ -1037,12 +1044,12 @@ void bajaServicio(int id, int y) {	// Eliminar, pero en baja
 			{
 				remove("src/servicios.txt");
 			    rename("src/temporal.txt", "src/servicios.txt");
-		    	printf("%cServicio `%i` dado de baja exitosamente!", 173, id);
+		    	printf("%cServicio `%i` dado de baja exitosamente!", 173, ser[p].id);
 		    	getch();
 		    	desactivadorSerEnt(ser[p].id, y+20);
 			}
 			else {
-				printf("No se dio de baja el servicio con la ID `%i`.", id);
+				printf("No se dio de baja el servicio con la ID `%i`.", ser[p].id);
 				remove("src/temporal.txt");
 	        	getch();
 			}
@@ -1114,6 +1121,9 @@ int idRepetidaSer(struct servicio ser[], int idWanted) {
 }
 
 int idSiguienteSer(struct servicio ser[], int i) {
+	leerArchivoServicio();
+	if (ser[0].id > 1)
+		return 1;
 	if ((ser[i].id)+1 != (ser[i+1].id))  // Se actualiza por si se añadió un nuevo valor
 		leerArchivoServicio(); // Sin esto repite el mismo núemero dos veces seguidas el mismo n
 	if ((ser[i].id)+1 == (ser[i+1].id))
@@ -1314,9 +1324,11 @@ void addEntrenador() {
 				system("cls");
 				gotoxy(10, 5);
 			}
+	        fclose(fp);
 	        printf("%cDesea a%cadir otro entrenador? (Y / N): ", 168, 164);
 	        option = yesOrNo(1);
-	        fclose(fp);
+	        if (option == 'Y')
+				guardarArchivoEntrenador(ent);
 		}
 		else {
 			gotoxy(10, 5);
@@ -1421,8 +1433,10 @@ void consultarEntrenadorGeneral() {
 			}
     	}
 	}
+	else 
+		j += 2;
     fclose(fp);
-    gotoxy(10, j+5);
+    gotoxy(10, j+3);
     printf("Presiona cualquier tecla para salir");
     getch();
 }
@@ -1653,19 +1667,6 @@ void altaEntrenador(int id, int y) {
 		    
 		    while (id == ent[p].id && option == 'Y' && strcmp(ent[p].estado, "Inactivo") == 0)
 		    {
-		    	fp = fopen("src/entrenadores.txt", "r+");
-			    if(fp == NULL){
-			    	system("cls");
-			        gotoxy(10,5);
-			        printf("Error abriendo el archivo");
-			        exit(1);
-			    }
-			    temp = fopen("src/temporal.txt","w+");
-			    if(temp == NULL) {
-			        gotoxy(10,y+6);
-			        printf("Error al abrir el archivo");
-			        exit(1);
-		    	}
 				displayEntrenador(p, y+8);
 		    	strcpy(ent[p].estado, "Activo"); // El estado queda desactivo y ya no se mostrarï¿½ o tomarï¿½ en cuenta
 		        while (1) {
@@ -1694,6 +1695,7 @@ void altaEntrenador(int id, int y) {
 					printf("ID   Nombre de Servicio  Especialidad   Estado    Descripci%cn                            ", 162);
 					gotoxy(10,y+3);
 					printf("____________________________________________________________________________________________________");
+					i = 0;
 		    		while(fread(&ser[i], sizeof(struct servicio), 1, pSer) == 1){
 						if (strcmp(ser[i].estado, "Activo") == 0 && strcmp(ent[p].especialidad, ser[i].especialidadReq) == 0) {
 							gotoxy(10, y+5);
@@ -1707,8 +1709,6 @@ void altaEntrenador(int id, int y) {
 			        	system("cls");
 			        	gotoxy(10,10);
 			        	printf("No puedes dar de alta ning%cn entrenador si no hay servicios registrados.", 163);
-			        	fclose(fp);
-						fclose(temp);
 						fclose(pSer);
 			        	getch();
 						return;
@@ -1717,8 +1717,6 @@ void altaEntrenador(int id, int y) {
 			        	system("cls");
 						gotoxy(10,10);
 						printf("No hay ning%cn servicio que requiera la especialidad del entrenador `%i` ahora mismo.", 163, ent[p].id);
-						fclose(fp);
-						fclose(temp);
 						fclose(pSer);
 			        	getch();
 						return;
@@ -1729,6 +1727,19 @@ void altaEntrenador(int id, int y) {
 						printf("ID entrenador: %i", id);
 						y++;
 						while (1) {
+							fp = fopen("src/entrenadores.txt", "r+");
+						    if(fp == NULL){
+						    	system("cls");
+						        gotoxy(10,5);
+						        printf("Error abriendo el archivo");
+						        exit(1);
+						    }
+						    temp = fopen("src/temporal.txt","w+");
+						    if(temp == NULL) {
+						        gotoxy(10,y+6);
+						        printf("Error al abrir el archivo");
+						        exit(1);
+					    	}
 							gotoxy(10, y+7);
 							printf("ID del servicio: ");
 							ent[p].idServicio = nument(3);
@@ -1750,6 +1761,8 @@ void altaEntrenador(int id, int y) {
 								break;
 							}
 							else {
+								fclose(fp);
+								fclose(temp);
 								int len = 1;
 								if (ent[p].idServicio >= 10)
 									len = 2;
@@ -1785,11 +1798,13 @@ void altaEntrenador(int id, int y) {
 					remove("src/entrenadores.txt");
 				    rename("src/temporal.txt", "src/entrenadores.txt");
 			    	printf("%cEntrenador dado de alta exitosamente!", 173);
-			    	altaRegistroEnt(id, y+14);
+			    	gotoxy(10,y+15);
+			    	printf("Presiona cualquier letra para a%cdir el registro de entrenador `%i`.", 164, ent[p].id);
 			    	getch();
+			    	altaRegistroEnt(id, 0);
 				}
 				else {
-					printf("No se dio de alta el entrenador con la ID `%i`.", id);
+					printf("No se dio de alta el entrenador con la ID `%i`.", ent[p].id);
 					remove("src/temporal.txt");
 					getch();
 				}
@@ -1998,6 +2013,9 @@ int idRepetidaEnt(struct entrenador ent[], int idWanted) {
 }
 
 int idSiguienteEnt(struct entrenador ent[], int i) {
+	leerArchivoEntrenador();
+	if (ent[0].id > 1)
+		return 1;
 	if ((ent[i].id)+1 != (ent[i+1].id))  // Se actualiza por si se añadió un nuevo valor
 		leerArchivoEntrenador(); // Sin esto repite el mismo núemero dos veces seguidas el mismo n
 	if ((ent[i].id)+1 == (ent[i+1].id))
@@ -2133,22 +2151,28 @@ void addCliente() {
 	        fwrite(&cli[j], sizeof(struct cliente), 1, fp);
 	        gotoxy(15,16);
 			printf("%cEl Cliente ha a%cadido exitosamente!", 173, 164);
+	        gotoxy(15,17);
+			printf("Presiona cualquier tecla para a%cadir el registro del cliente `%i`", 164, cli[j].id);
 	        getch();
-	        gotoxy(15,19);
-	        printf("%cDesea darlo de alta? (Y / N): ", 168);
+	        addRegistroCli(cli[j].id);
+	        system("cls");
+	        gotoxy(15,3);
+	        printf("%cDesea dar de alta al cliente con la ID `%i`? (Y / N): ", 168, cli[j].id);
 	        option = yesOrNo(1);
 	        if (option == 'Y') {
 	        	fclose(fp);
 	        	altaCliente(cli[j].id, 0);
 			}
-			gotoxy(15,19);
+			gotoxy(15,5);
 			if(option == 'Y') {
 				system("cls");
 				gotoxy(10, 5);
 			}
+	        fclose(fp);
 	        printf("%cDesea a%cadir otro cliente? (Y / N): ", 168, 164);
 	        option = yesOrNo(1);
-	        fclose(fp);
+	        if (option == 'Y')
+				guardarArchivoCliente(cli);
 		}
 		else {
 			gotoxy(10, 5);
@@ -2253,8 +2277,10 @@ void consultarClienteGeneral(){
 			}
     	}
 	}
+	else 
+		j += 2;
     fclose(fp);
-    gotoxy(10, j+5);
+    gotoxy(10, j+3);
     printf("Presiona cualquier tecla para salir");
     getch();
 }
@@ -2554,7 +2580,7 @@ void altaCliente(int id, int y) {
 					if (condition == 0) {
 			        	system("cls");
 						gotoxy(10,10);
-						printf("No hay ning%cn entrenador que se adapte a las necesidades del cliente `%i` ahora mismo.", 163, ent[p].id);
+						printf("No hay ning%cn entrenador que se adapte a las necesidades del cliente `%i` ahora mismo.", 163, cli[p].id);
 						fclose(fp);
 						fclose(temp);
 						fclose(pEnt);
@@ -2601,7 +2627,7 @@ void altaCliente(int id, int y) {
 					}
 				}
 				gotoxy(10,y+10);
-				printf("%cGuardar los cambios y dar de alta el cliente con la ID `%i`? (Y / N): ", 168, id);
+				printf("%cGuardar los cambios y dar de alta el cliente con la ID `%i`? (Y / N): ", 168, cli[p].id);
 			    option = yesOrNo(1);
 			    i = 0; // Se pone para resetear el conteo donde se añaden los clientes
 			 	if(option == 'Y')
@@ -2620,12 +2646,16 @@ void altaCliente(int id, int y) {
 					remove("src/clientes.txt");
 				    rename("src/temporal.txt", "src/clientes.txt");
 			    	printf("%cCliente dado de alta exitosamente!", 173);
+			    	gotoxy(10,y+15);
+			    	printf("Presiona cualquier letra para a%cadir el registro de cliente `%i`.", 164, id);
+					getch();
+			    	altaRegistroCli(id, 0);
 				}
 				else {
 					printf("No se dio de alta el cliente con la ID `%i`.", id);
 					remove("src/temporal.txt");
+		        	getch();
 				}
-		        getch();
 	            return;
 			}
 			system("cls");
@@ -2704,6 +2734,7 @@ void bajaCliente(int id, int y) {
 				remove("src/clientes.txt");
 			    rename("src/temporal.txt", "src/clientes.txt");
 		    	printf("%cCliente dado de baja exitosamente!", 173);
+		    	y = desactivadorCliReg(id, y+20);
 			}
 			else {
 				printf("No se dio de baja el cliente con la ID `%i`.", id);
@@ -2825,6 +2856,9 @@ int idRepetidaCli(struct cliente cli[], int idWanted){
 }
 
 int idSiguienteCli(struct cliente cli[], int i) {
+	leerArchivoCliente();
+	if (cli[0].id > 1)
+		return 1;
 	if ((cli[i].id)+1 != (cli[i+1].id)) // Sin esto repite el mismo núemero dos veces seguidas
 		leerArchivoCliente();
 	if ((cli[i].id)+1 == (cli[i+1].id))
@@ -2875,7 +2909,7 @@ void addRegistroEnt(int idEntrenador) {
 	        exit(1);
 	    }
     	system("cls");
-	    while(fread(&ser[j], sizeof(struct servicio), 1, fp) == 1){
+	    while(fread(&entReg[j], sizeof(struct registro), 1, fp) == 1){
 	    	if (strcmp(ser[j].estado, "Activo") == 0) { // Solo se imprimen los activos
 	    		i++;
 	    	}
@@ -2888,33 +2922,27 @@ void addRegistroEnt(int idEntrenador) {
 				gotoxy(15,2);
 		        printf("<====    A%cadir Registro Entrenador    ====>", 164);
 		        gotoxy(15,4);
-		        printf("Inserta los detalles del servicio");
+		        printf("Inserta los detalles del del registro del entrenador");
 		        gotoxy(15,6);
 		        printf("ID: %i", idEntrenador);
 				gotoxy(15,7);
 		        printf("Ingresa la fecha de registro: ");
-		        valifec(entReg[j].fechaRegistro);
+		        valitext(10, entReg[j].fechaRegistro);
+//		        valifec(entReg[j].fechaRegistro);
 				gotoxy(15,10);
 	        	printf("%cEst%cn bien los datos? (Y / N): ", 168, 160);
 	        	option = yesOrNo(1);
 	        	if (option == 'Y')
 	        		break;
 			}
+			entReg[j].id = idEntrenador;
 	        strcpy(entReg[j].estado, "Inactivo"); // Son por defecto de baja
 	        strcpy(entReg[j].altaRegistro, "S/N");
 	        fwrite(&entReg[j], sizeof(struct registro), 1, fp);
 	        gotoxy(15,13);
 			printf("%cRegistro para el entrenador `%i` a%cadido exitosamente!", 173, idEntrenador, 164);
-	        getch();
-	        gotoxy(15,15);
-	        printf("%cDesea darlo de alta? (Y / N): ", 168);
-	        option = yesOrNo(1);
-	        if (option == 'Y') {
-	        	fclose(fp);
-	        	altaRegistroEnt(idEntrenador, 0);
-			}
-			gotoxy(15,15);
-	        fclose(fp);
+	   		fclose(fp);
+	   		return;
 		}
 		else {
 			gotoxy(10, 5);
@@ -2940,11 +2968,9 @@ void consultarRegistroEnt() {
 		printf("2. Espec%cfico", 161);
 		gotoxy(40, 10);
 		printf("3. Regresar");
-		
 		gotoxy(44, 15);
 		printf("> > Elige una opci%cn: ", 162);
 		option = nument(1);
-		
 		switch (option) {
 			case 1:
 				consultarRegistroEntGeneral();
@@ -2993,7 +3019,7 @@ void consultarRegistroEntGeneral() {
     fclose(fp);
     getch();
     gotoxy (10, j+3);
-    printf("%cDesea ver los clientes inactivos tambi%cn? (Y / N): ", 168, 130);
+    printf("%cDesea ver los registros de entrenadores inactivos tambi%cn? (Y / N): ", 168, 130);
 	option = yesOrNo(1);
 	if (option == 'Y') {
 		fp = fopen("src/registro_ent.txt","r+");
@@ -3005,7 +3031,7 @@ void consultarRegistroEntGeneral() {
 		i = 0, j = 8;
 		system("cls");
 	    gotoxy(36,2);
-	    printf("<====    Consulta General Cliente    ====>");
+	    printf("<====    Consulta General Registro Entrenador    ====>");
 	    gotoxy(10,5);
 	    printf("ID Ent.  Fecha de Registro  Fecha de Alta  Estado");
 	    gotoxy(10,6);
@@ -3019,8 +3045,10 @@ void consultarRegistroEntGeneral() {
 			}
     	}
 	}
+	else
+		j += 2;
     fclose(fp);
-    gotoxy(10, j+5);
+    gotoxy(10, j+3);
     printf("Presiona cualquier tecla para salir");
     getch();
 }
@@ -3032,22 +3060,22 @@ void consultarRegistroEntEspecifico() {
 	int condition = 1;
 	char option='Y';
 	FILE *fp;
-	p = idPositionCli(cli, cod); 
+	p = idPositionRegEnt(entReg, cod); 
 	while(option == 'Y'){
 		system("cls");
 		gotoxy(38,2);
-	    printf("<====     Consulta Espec%cfica de Cliente     ====>", 161);
+	    printf("<====     Consulta Espec%cfica Registro de Entrenador     ====>", 161);
 	    gotoxy(38,5);
-		printf("ID del Cliente: ");
+		printf("ID del entrenador: ");
 		cod = nument(3);
-		fp = fopen("src/clientes.txt","r+");
+		fp = fopen("src/registro_ent.txt","r+");
 		while(!feof(fp)){ 
-			fread(&cli[i], sizeof(struct cliente), 1, fp);
+			fread(&entReg[i], sizeof(struct registro), 1, fp);
 			if(cod == cli[i].id){ // Lo imprime aunque estï¿½ inactivo
 				system("cls");
 				gotoxy(38,2);
-			    printf("<====     Consulta Espec%cfica Entrenador     ====>", 161);
-			    displayEntrenador(i, 5);
+			    printf("<====     Consulta Espec%cfica Registro de Entrenador     ====>", 161);
+			    displayRegistroEnt(i, 5);
 				getch();
 		        gotoxy(10, 12);
 				printf("%cDesea buscar otro entrenador? (Y / N): ", 168, 164);
@@ -3089,9 +3117,9 @@ void modificarRegistroEnt() {
 	    p = idPositionCli(cli, idEntrenador);
 	    if (cli[p].id == idEntrenador && strcmp(cli[p].estado, "Activo") == 0)
 	    {
-	    	displayCliente(p, 8);
+	    	displayRegistroEnt(p, 8);
 		    gotoxy(10,14);
-			printf("%cEst%c seguro que quiere editar el cliente con la ID `%i`? (Y / N): ", 168, 160, idEntrenador);
+			printf("%cEst%c seguro que quiere editar el registro de entrenador con la ID `%i`? (Y / N): ", 168, 160, idEntrenador);
 		    option = yesOrNo(1);
 		}
 		while(idEntrenador == entReg[p].id && strcmp(cli[p].estado, "Activo") == 0) // Puedes modificar mientras la ID coincida y el cliente se encuentre activo
@@ -3111,10 +3139,11 @@ void modificarRegistroEnt() {
 		        printf("Error abriendo el archivo");
 		        exit(1);
 		    }
-        	displayCliente(p, 4);
+        	displayRegistroEnt(p, 4);
             gotoxy(10,10);
 			printf("Ingresa la fecha de registro: ");
-	        valifec(entReg[p].fechaRegistro);
+			valitext(10, entReg[p].fechaRegistro);
+//	        valifec(entReg[p].fechaRegistro);
 	        gotoxy(10,12);
 	        printf("%cDesea guardar los cambios? (Y / N): ", 168);
 	        option = yesOrNo(1);
@@ -3155,7 +3184,7 @@ void modificarRegistroEnt() {
 			else
 				printf("La ID `%i` no est%c registrada.", idEntrenador, 160);
 			gotoxy(10,7);
-			printf("%cDesea buscar otro cliente para modificar? (Y / N): ", 168, 164);
+			printf("%cDesea buscar otro registro de entrenadores para modificar? (Y / N): ", 168, 164);
 			option = yesOrNo(1);
 			if (option == 'N')
 				return;
@@ -3169,7 +3198,7 @@ void altaRegistroEnt(int id, int y) {
 	char option = 'Y';
 	i = 0, j = 0;
 	fp = fopen("src/registro_ent.txt", "r+");
-    if(fp == NULL){
+    if(fp == NULL) {
     	system("cls");
         gotoxy(10,5);
         printf("Error abriendo el archivo");
@@ -3205,13 +3234,14 @@ void altaRegistroEnt(int id, int y) {
 		    printf("<====    Dar de Alta Registro de Entrenador    ====>");
 		    gotoxy(10,y+5);
 			printf("Insertar la ID a dar de alta: %i", id);
-			displayServicio(p, y+8);
+			displayRegistroEnt(p, y+8);
 	    	strcpy(entReg[p].estado, "Activo"); // El estado queda desactivo y ya no se mostrarï¿½ o tomarï¿½ en cuenta
 			gotoxy(10,y+14);
 			printf("Fecha de alta: ");
-	        valifec(entReg[p].altaRegistro);
+			valitext(10, entReg[p].altaRegistro);
+//	        valifec(entReg[p].altaRegistro);
 			gotoxy(10,y+16);
-			printf("%cGuardar los cambios y dar de alta el servicio con la ID `%i`? (Y / N): ", 168, id);
+			printf("%cGuardar los cambios y dar de alta el registro del entrenador con la ID `%i`? (Y / N): ", 168, id);
 		    option = yesOrNo(1);
 		    if (option == 'Y')
 		    	break;
@@ -3230,7 +3260,7 @@ void altaRegistroEnt(int id, int y) {
 		gotoxy(10,y+19);
 		remove("src/registro_ent.txt");
 	    rename("src/temporal.txt", "src/registro_ent.txt");
-    	printf("%cServicio dado de alta exitosamente!", 173);
+    	printf("%cRegistro de entrenador `%i` dado de alta exitosamente!", 173, id);
         getch();
         return;
 	}
@@ -3262,7 +3292,7 @@ void leerArchivoRegistroEnt() {
     fclose(pReg);
 }
 
-void guardarArchivoRegistroEnt(struct entrenador ent[]) {
+void guardarArchivoRegistroEnt(struct registro entReg[]) {
 	FILE *fp; // En vez de guardar el archivo en sï¿½, acomodarï¿½ las ID por orden numï¿½rico
 	FILE *temp;
 	int i = 0, j = 0, k = 0, izq = 0, der = 0, temporal = 0;
@@ -3283,7 +3313,7 @@ void guardarArchivoRegistroEnt(struct entrenador ent[]) {
 	int arr[i];
 	
 	for (j = 0; i > j; j++) { // Asignar los valores desordenados a un arreglo
-    	arr[j] = cli[j].id;
+    	arr[j] = entReg[j].id;
 	}
 	// Aquï¿½ se acomodan los nï¿½meros del arreglo de manera numï¿½rica
     for (k = 0; k < i; k++) { // i representa el tope
@@ -3301,7 +3331,7 @@ void guardarArchivoRegistroEnt(struct entrenador ent[]) {
 	
 	for (j = 0; j < i; j++) {
 		for (k = 0; k < i; k++) {	
-			if (arr[j] == cli[k].id) {
+			if (arr[j] == entReg[k].id) {
 				fwrite(&entReg[k], sizeof(struct registro), 1, temp);
 				break;
 			}
@@ -3337,47 +3367,473 @@ int idPositionRegEnt(struct registro entReg[], int idWanted){
 // --------------------------------------------------------------
 
 void addRegistroCli(int idCliente) {
-	
+	FILE *fp;
+    char option = 'Y';
+    int i = 0, j = 0, p = 0;
+    while(option == 'Y')
+    {
+    	i = 0, j = 0;
+    	fp = fopen("src/registro_cli.txt", "a+");
+	    if(fp == NULL){
+	    	system("cls");
+	        gotoxy(10,5);
+	        printf("Error abriendo el archivo");
+	        exit(1);
+	    }
+    	system("cls");
+	    while(fread(&cliReg[j], sizeof(struct registro), 1, fp) == 1){
+	    	if (strcmp(cliReg[j].estado, "Activo") == 0) { // Solo se imprimen los activos
+	    		i++;
+	    	}
+	    	j++;
+		}
+    	if (i < 10)
+    	{
+			while (1) {
+				system("cls");
+				gotoxy(15,2);
+		        printf("<====    A%cadir Registro Cliente    ====>", 164);
+		        gotoxy(15,4);
+		        printf("Inserta los detalles del registro del cliente");
+		        gotoxy(15,6);
+		        printf("ID: %i", idCliente);
+				gotoxy(15,7);
+		        printf("Ingresa la fecha de registro: ");
+		        valitext(10, cliReg[j].fechaRegistro);
+//		        valifec(cliReg[j].fechaRegistro);
+				gotoxy(15,10);
+	        	printf("%cEst%cn bien los datos? (Y / N): ", 168, 160);
+	        	option = yesOrNo(1);
+	        	if (option == 'Y')
+	        		break;
+			}
+			cliReg[j].id = idCliente;
+	        strcpy(cliReg[j].estado, "Inactivo"); // Son por defecto de baja
+	        strcpy(cliReg[j].altaRegistro, "S/N");
+	        fwrite(&cliReg[j], sizeof(struct registro), 1, fp);
+	        gotoxy(15,13);
+			printf("%cRegistro para el cliente `%i` a%cadido exitosamente!", 173, idCliente, 164);
+	        fclose(fp);
+	        return;
+		}
+		else {
+			gotoxy(10, 5);
+			printf("No hay espacio de almacentamiento para m%cs registros. :(", 160);
+			fclose(fp);
+			return;
+		}
+    }
+    fclose(fp);
 }
 
 void consultarRegistroCli() {
+	int option = 0;
 	
+	do {
+		system("cls");
+		gotoxy(40, 5);
+		printf("<====     Men%c Consulta Registro Cliente     ====>", 163);
+		gotoxy(40, 8);
+		printf("1. General");
+		gotoxy(40, 9);
+		printf("2. Espec%cfico", 161);
+		gotoxy(40, 10);
+		printf("3. Regresar");
+		
+		gotoxy(44, 15);
+		printf("> > Elige una opci%cn: ", 162);
+		option = nument(1);
+		
+		switch (option) {
+			case 1:
+				consultarRegistroCliGeneral();
+				break;
+			case 2:
+				consultarRegistroCliGeneral();
+				break;
+			case 3:
+				break;
+			default:
+				system("cls");
+				gotoxy(40, 10);
+				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
+				Sleep(300);
+				break;
+		}
+	} while (option != 3);
 }
 
 void consultarRegistroCliGeneral() {
-	
+	FILE *fp;
+    int i = 0, j;
+    char option;
+    system("cls");
+    gotoxy(36,2);
+    printf("<====    Consulta General Registro Cliente    ====>");
+    gotoxy(10,5);
+    printf("ID Cli.  Fecha de Registro  Fecha de Alta  Estado");
+    gotoxy(10,6);
+    printf("___________________________________________________");
+    fp = fopen("src/registro_cli.txt","r+");
+    if(fp == NULL){
+        gotoxy(10,8);
+        printf("Error abriendo el archivo");
+        exit(1);
+    }
+    j=8;
+    while(fread(&cliReg[i], sizeof(struct registro), 1, fp) == 1){
+    	if (strcmp(cliReg[i].estado, "Activo") == 0) { // Solo se imprimen los activos
+    		gotoxy(10, j);
+	        printf("%-9d%-19s%-15s%s", cliReg[i].id, cliReg[i].fechaRegistro, cliReg[i].altaRegistro, cliReg[i].estado);
+	        i++;
+	        j++;
+		}
+    }
+    fclose(fp);
+    getch();
+    gotoxy (10, j+3);
+    printf("%cDesea ver los registros de clientes inactivos tambi%cn? (Y / N): ", 168, 130);
+	option = yesOrNo(1);
+	if (option == 'Y') {
+		fp = fopen("src/registro_cli.txt","r+");
+	    if(fp == NULL){
+	        gotoxy(10,8);
+	        printf("Error abriendo el archivo");
+	        exit(1);
+	    }
+		i = 0, j = 8;
+		system("cls");
+	    gotoxy(36,2);
+	    printf("<====    Consulta General Registro de Cliente    ====>");
+	    gotoxy(10,5);
+	    printf("ID Cli.  Fecha de Registro  Fecha de Alta  Estado");
+	    gotoxy(10,6);
+		printf("___________________________________________________");
+		while(fread(&cliReg[i], sizeof(struct registro), 1, fp) == 1){
+	    	if (strcmp(cliReg[i].estado, "Inactivo") == 0) { // Solo se imprimen los activos
+	    		gotoxy(10, j);
+				printf("%-9d%-19s%-15s%s", cliReg[i].id, cliReg[i].fechaRegistro, cliReg[i].altaRegistro, cliReg[i].estado);
+		        i++;
+		        j++;
+			}
+    	}
+	}
+	else
+		j += 2;
+    gotoxy(10, j+3);
+    printf("Presiona cualquier tecla para salir");
+    getch();
 }
 
 void consultarRegistroCliEspecifico() {
-	
+	int cod;
+	int p; // p = position
+	int i = 0;
+	int condition = 1;
+	char option='Y';
+	FILE *fp;
+	p = idPositionRegCli(cliReg, cod);
+	while(option == 'Y'){
+		system("cls");
+		gotoxy(38,2);
+	    printf("<====     Consulta Espec%cfica Registro de Cliente     ====>", 161);
+	    gotoxy(38,5);
+		printf("ID del Cliente: ");
+		cod = nument(3);
+		fp = fopen("src/registro_cli.txt","r+");
+		while(!feof(fp)){ 
+			fread(&cliReg[i], sizeof(struct registro), 1, fp);
+			if(cod == cliReg[i].id){ // Lo imprime aunque estï¿½ inactivo
+				system("cls");
+				gotoxy(38,2);
+			    printf("<====     Consulta Espec%cfica Registro Cliente     ====>", 161);
+			    displayEntrenador(i, 5);
+				getch();
+		        gotoxy(10, 12);
+				printf("%cDesea buscar otro registro de cliente? (Y / N): ", 168, 164);
+		        option = yesOrNo(1);
+		        condition = 0;
+		        fclose(fp); // ALGO CLAVE ERA QUE CERRARAN ESTOS
+				break;
+			}
+		}
+		if (p == NULL && condition == 1) {
+			system("cls");
+			gotoxy(10,4);
+			printf("La ID `%i` no se encuentra registrada.", cod);
+			gotoxy(10,5);
+			printf("%cDesea buscar otro registro de cliente para consultar? (Y / N): ", 168, 164);
+			fflush(stdin);
+			option = yesOrNo(1);
+			fclose(fp); // ALGO CLAVE ERA QUE CERRARAN ESTOS
+			if (option == 'N')
+				break;
+		}
+		condition = 1;
+	}
+	fclose(fp);
 }
 
 void modificarRegistroCli() {
-	
+	FILE *fp, *temp;
+    char option = 'Y';
+	int idCliente; // Esto era char antes, daba 89 en vez de 344 LMAO
+	int i = 0, p = 0;
+	do {
+		system("cls");
+		gotoxy(10,3);
+	    printf("<====    Modificar Registro de Cliente    ====>");
+	    gotoxy(10,5);
+	    printf("Inserta la ID del registro de cliente a modificar: ");
+	    idCliente = nument(3);
+	    p = idPositionRegCli(cliReg, idCliente);
+	    if (cli[p].id == idCliente && strcmp(cli[p].estado, "Activo") == 0)
+	    {
+	    	displayRegistroCli(p, 8);
+		    gotoxy(10,14);
+			printf("%cEst%c seguro que quiere editar el registro del cliente con la ID `%i`? (Y / N): ", 168, 160, idCliente);
+		    option = yesOrNo(1);
+		}
+		while(idCliente == cliReg[p].id && strcmp(cli[p].estado, "Activo") == 0) // Puedes modificar mientras la ID coincida y el cliente se encuentre activo
+	    {
+	    	system("cls");
+	    	if (option == 'N')
+				return;
+		    fp = fopen("src/registro_ent.txt","r+");
+		    if(fp == NULL) {
+		        gotoxy(10,6);
+		        printf("Error abriendo el archivo");
+		        exit(1);
+		    }
+		    temp = fopen("src/temporal.txt","w+");
+		    if(fp == NULL) {
+		        gotoxy(10,6);
+		        printf("Error abriendo el archivo");
+		        exit(1);
+		    }
+        	displayRegistroCli(p, 4);
+            gotoxy(10,10);
+			printf("Ingresa la fecha de registro: ");
+			valitext(10, cliReg[p].fechaRegistro);
+//	        valifec(cliReg[p].fechaRegistro);
+	        gotoxy(10,12);
+	        printf("%cDesea guardar los cambios? (Y / N): ", 168);
+	        option = yesOrNo(1);
+			gotoxy(10,15);
+			// Primero guarda la variable cambiada y la mueve al principio,
+			// entonces, anota el resto menos la cambiada.
+			if(option == 'Y')
+				fwrite(&cliReg[p], sizeof(struct registro), 1, temp); // Primero se anota la reciï¿½n guardada
+			while (fread(&cliReg[i], sizeof(struct registro), 1, fp) == 1) {
+				if (cliReg[i].id != cliReg[p].id) { // Condiciï¿½n para que no se repita la misma id despuï¿½s del cambio
+	    			fwrite(&entReg[i], sizeof(struct registro), 1, temp);
+				}
+				i++;
+			}
+	    	fclose(fp);
+			fclose(temp);
+			if(option == 'Y')
+			{
+				remove("src/registro_cli.txt");
+			    rename("src/temporal.txt", "src/registro_cli.txt");
+		    	printf("%cRegistro de Entrenador modificado exitosamente!", 173);
+			}
+			else {
+				printf("No se hizo ning%cn cambio.", 163);
+				remove("src/temporal.txt");
+			}
+	        getch();
+            return;
+	    }
+	    
+    	if (option == 'Y')
+    	{
+    		
+			system("cls");
+			gotoxy(10,4);
+    		if (strcmp(cliReg[p].estado, "Inactivo") == 0)
+				printf("La ID `%i` necesita estar dada de alta para ser modificada.", idCliente);
+			else
+				printf("La ID `%i` no est%c registrada.", idCliente, 160);
+			gotoxy(10,7);
+			printf("%cDesea buscar otro cliente para modificar? (Y / N): ", 168, 164);
+			option = yesOrNo(1);
+			if (option == 'N')
+				return;
+		}
+	} while (option == 'Y');
 }
 
 void altaRegistroCli(int id, int y) {
-	
-}
-
-int bajaRegistroCli(int id, int y) {
-	
+	FILE *fp,*temp;
+    int i = 0, j = 0, p = 0;
+	char option = 'Y';
+	i = 0, j = 0;
+	fp = fopen("src/registro_cli.txt", "r+");
+    if(fp == NULL){
+    	system("cls");
+        gotoxy(10,5);
+        printf("Error abriendo el archivo");
+        exit(1);
+    }
+    while(fread(&cliReg[j], sizeof(struct registro), 1, fp) == 1){
+    	if (strcmp(cliReg[j].estado, "Activo") == 0) { // Solo se imprimen los activos
+    		i++;
+    	}
+    	j++;
+	}
+	fclose(fp);
+    system("cls");
+    if (i < 10)
+    {
+    	fp = fopen("src/registro_cli.txt", "r+");
+	    if(fp == NULL){
+	    	system("cls");
+	        gotoxy(10,5);
+	        printf("Error abriendo el archivo");
+	        exit(1);
+	    }
+	    temp = fopen("src/temporal.txt","w+");
+	    if(temp == NULL) {
+	        gotoxy(10,y+6);
+	        printf("Error al abrir el archivo");
+	        exit(1);
+    	}
+		p = idPositionRegCli(cliReg, id);
+		while(1) {
+			system("cls");
+			gotoxy(10,y+3);
+		    printf("<====    Dar de Alta Registro de Cliente    ====>");
+		    gotoxy(10,y+5);
+			printf("Insertar la ID a dar de alta: %i", id);
+			displayRegistroCli(p, y+8);
+	    	strcpy(cliReg[p].estado, "Activo"); // El estado queda desactivo y ya no se mostrarï¿½ o tomarï¿½ en cuenta
+			gotoxy(10,y+14);
+			printf("Fecha de alta: ");
+			valitext(10, cliReg[p].altaRegistro);
+//	        valifec(cliReg[p].altaRegistro);
+			gotoxy(10,y+16);
+			printf("%cGuardar los cambios y dar de alta el registro del cliente con la ID `%i`? (Y / N): ", 168, id);
+		    option = yesOrNo(1);
+		    if (option == 'Y')
+		    	break;
+		}
+	    i = 0; // Se pone para resetear el conteo donde se añaden los servicios
+	 	if(option == 'Y')
+			fwrite(&cliReg[p], sizeof(struct registro), 1, temp); // Primero se anota la reciï¿½n guardada
+		while (fread(&cliReg[i], sizeof(struct registro), 1, fp) == 1) {
+			if (cliReg[i].id != cliReg[p].id) { // Condiciï¿½n para que no se repita la misma id despuï¿½s del cambio
+    			fwrite(&cliReg[i], sizeof(struct registro), 1, temp);
+    		}
+    		i++;
+    	}
+    	fclose(fp);
+		fclose(temp);
+		gotoxy(10,y+19);
+		remove("src/registro_cli.txt");
+	    rename("src/temporal.txt", "src/registro_cli.txt");
+    	printf("%cRegistro del cliente `%i` dado de alta exitosamente!", 173, id);
+        getch();
+        return;
+	}
 }
 
 void displayRegistroCli(int p, int y) {
-	
-}
-
-int idPositionRegCli(struct registro cliReg[], int idWanted) {
-	
+	gotoxy(10,y);
+    printf("ID Ent.  Fecha de Registro  Fecha de Alta  Estado");
+	gotoxy(10,y+1);
+	printf("___________________________________________________");
+	gotoxy(10, y+3);
+	printf("%-9d%-19s%-15s%s", cliReg[p].id, cliReg[p].fechaRegistro, cliReg[p].altaRegistro, cliReg[p].estado);
 }
 
 void leerArchivoRegistroCli() {
-	
+	FILE *pReg;
+    int i = 0;
+    pReg = fopen("src/registro_cli.txt","r+");
+    if(pReg == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        exit(1);
+    }
+    else {
+        while(fread(&cliReg[i], sizeof(struct registro), 1, pReg) == 1){
+        	// Leer
+        	i++;
+        }
+    }
+    fclose(pReg);
 }
 
 void guardarArchivoRegistroCli(struct registro cliReg[]) {
+	FILE *fp; // En vez de guardar el archivo en sï¿½, acomodarï¿½ las ID por orden numï¿½rico
+	FILE *temp;
+	int i = 0, j = 0, k = 0, izq = 0, der = 0, temporal = 0;
+    fp = fopen("src/registro_cli.txt","r+");
+    if(fp == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        exit(1);
+    }
+    temp = fopen("src/temporal.txt","w+");
+	if(temp == NULL) {
+		printf("ARCHIVO NO CREADO/ABIERTO");
+		getch();
+	}
+	while(fread(&cliReg[i], sizeof(struct registro), 1, fp) == 1){
+    	i++; // para sacar la longitud de entrenadores
+	}
 	
+	int arr[i];
+	
+	for (j = 0; i > j; j++) { // Asignar los valores desordenados a un arreglo
+    	arr[j] = cliReg[j].id;
+	}
+	// Aquï¿½ se acomodan los nï¿½meros del arreglo de manera numï¿½rica
+    for (k = 0; k < i; k++) { // i representa el tope
+    	for (izq = 0, der = 1; der < i; izq++, der++) {
+    		if (arr[izq] > arr[der]) {
+    			temporal = arr[der];
+    			arr[der] = arr[izq];
+    			arr[izq] = temporal;
+			}
+		}
+	}
+	
+	// Aquï¿½ ya se imprimen las variables en orden numï¿½rico en un archivo temporal
+	// que se termina reenombrando como entrenador
+	
+	for (j = 0; j < i; j++) {
+		for (k = 0; k < i; k++) {	
+			if (arr[j] == cliReg[k].id) {
+				fwrite(&cliReg[k], sizeof(struct registro), 1, temp);
+				break;
+			}
+		}
+	}
+	fclose(fp);
+	fclose(temp);
+	remove("src/registro_cli.txt");
+	rename("src/temporal.txt", "src/registro_cli.txt");
+}
+
+int idPositionRegCli(struct registro cliReg[], int idWanted){
+	FILE *fp;
+    fp = fopen("src/registro_cli.txt","r+");
+    if(fp == NULL){
+        printf("ARCHIVO NO CREADO/ABIERTO");
+        exit(1);
+    }
+	int top = 0, i = 0;
+	while(fread(&cliReg[top], sizeof(struct registro), 1, fp) == 1){
+    	top++; // para sacar la longitud de entrenadores
+	}
+	for (i = 0; i < top; i++) {
+		if (cliReg[i].id == idWanted) {
+			fclose(fp);
+			return i;
+		}
+	}
+	fclose(fp);
+	return NULL;
 }
 
 
@@ -3566,7 +4022,62 @@ int desactivadorEntReg(int idDesactivada, int y) {
 }
 
 int desactivadorCliReg(int idDesactivada, int y) {
-	
+	FILE *fp,*temp;
+    int i = 0, j = 0, p = 0;
+	char option = 'Y';
+	i = 0, j = 0;
+	fp = fopen("src/registro_cli.txt", "r+");
+    if(fp == NULL){
+    	system("cls");
+        gotoxy(10,5);
+        printf("Error abriendo el archivo");
+        exit(1);
+    }
+    while(fread(&cliReg[j], sizeof(struct registro), 1, fp) == 1){
+    	if (strcmp(cliReg[j].estado, "Activo") == 0) { // Solo se imprimen los activos
+    		i++;
+    	}
+    	j++;
+	}
+	fclose(fp);
+    system("cls");
+    if (i < 10)
+    {
+    	fp = fopen("src/registro_cli.txt", "r+");
+	    if(fp == NULL){
+	    	system("cls");
+	        gotoxy(10,5);
+	        printf("Error abriendo el archivo");
+	        exit(1);
+	    }
+	    temp = fopen("src/temporal.txt","w+");
+	    if(temp == NULL) {
+	        gotoxy(10,y+6);
+	        printf("Error al abrir el archivo");
+	        exit(1);
+    	}
+		p = idPositionRegCli(cliReg, idDesactivada);
+    	strcpy(cliReg[p].estado, "Inactivo"); // El estado queda desactivo y ya no se mostrarï¿½ o tomarï¿½ en cuenta
+		strcpy(cliReg[p].altaRegistro, "S/N");
+	    i = 0; // Se pone para resetear el conteo donde se añaden los servicios
+	 	if(option == 'Y')
+			fwrite(&cliReg[p], sizeof(struct registro), 1, temp); // Primero se anota la reciï¿½n guardada
+		while (fread(&cliReg[i], sizeof(struct registro), 1, fp) == 1) {
+			if (cliReg[i].id != cliReg[p].id) { // Condiciï¿½n para que no se repita la misma id despuï¿½s del cambio
+    			fwrite(&cliReg[i], sizeof(struct registro), 1, temp);
+    		}
+    		i++;
+    	}
+    	fclose(fp);
+		fclose(temp);
+		gotoxy(10,y+19);
+		remove("src/registro_cli.txt");
+	    rename("src/temporal.txt", "src/registro_cli.txt");
+    	printf("%cRegistro de cliente `%i` dado de baja exitosamente!", 173, idDesactivada);
+        getch();
+        y++;
+        return y;
+	}
 }
 
 
@@ -3605,7 +4116,7 @@ void valitext(int lon, char *pnom){
 	int c=0, x=0;
     do{
 		c=getch();
-        if((x == 0) && c>=65 && c<=90 || c>=97 && c<=122 || c==32 || c == 130 || c >= 160 && c <= 165 || c == 181 || c == 144 || c == 214 || c == 224 || c == 233) {
+        if(c>=65 && c<=90 || c>=97 && c<=122 || c==32 || c == 130 || c >= 160 && c <= 165 || c == 181 || c == 144 || c == 214 || c == 224 || c == 233) {
 			if (x == 0 && (c == 130 || c >= 160 &&  c <= 164)) {
 				switch (c) {
 					case 160:
