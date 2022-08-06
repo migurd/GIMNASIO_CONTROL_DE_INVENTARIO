@@ -432,7 +432,6 @@ void menuRegistroEnt() {
 		printf("> > Elige una opci%cn: ", 162);
 		option = nument(1);
 		leerArchivoRegistroEnt();
-		guardarArchivoRegistroEnt(entReg);
 		switch (option) {
 			case 1:
 				consultarRegistroEnt();
@@ -470,7 +469,6 @@ void menuRegistroCli() {
 		printf("> > Elige una opci%cn: ", 162);
 		option = nument(1);
 		leerArchivoRegistroCli();
-		guardarArchivoRegistroCli(cliReg);
 		switch (option) {
 			case 1:
 				consultarRegistroCli();
@@ -3469,7 +3467,7 @@ void consultarRegistroCliGeneral() {
     char option;
     system("cls");
     gotoxy(36,2);
-    printf("<====    Consulta General Registro Cliente    ====>");
+    printf("<====    Consulta General Registro de Cliente    ====>");
     gotoxy(10,5);
     printf("ID Cli.  Fecha de Registro  Fecha de Alta  Estado");
     gotoxy(10,6);
