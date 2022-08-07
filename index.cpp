@@ -3114,14 +3114,14 @@ void modificarRegistroEnt() {
 	    printf("Inserta la ID del registro de entrenador a modificar: ");
 	    idEntrenador = nument(3);
 	    p = idPositionRegEnt(entReg, idEntrenador);
-	    if (cli[p].id == idEntrenador && strcmp(cli[p].estado, "Activo") == 0)
+	    if (entReg[p].id == idEntrenador && strcmp(entReg[p].estado, "Activo") == 0)
 	    {
 	    	displayRegistroEnt(p, 8);
 		    gotoxy(10,14);
 			printf("%cEst%c seguro que quiere editar el registro de entrenador con la ID `%i`? (Y / N): ", 168, 160, idEntrenador);
 		    option = yesOrNo(1);
 		}
-		while(idEntrenador == entReg[p].id && strcmp(cli[p].estado, "Activo") == 0) // Puedes modificar mientras la ID coincida y el cliente se encuentre activo
+		while(idEntrenador == entReg[p].id && strcmp(entReg[p].estado, "Activo") == 0) // Puedes modificar mientras la ID coincida y el cliente se encuentre activo
 	    {
 	    	system("cls");
 	    	if (option == 'N')
@@ -3587,14 +3587,14 @@ void modificarRegistroCli() {
 	    printf("Inserta la ID del registro de cliente a modificar: ");
 	    idCliente = nument(3);
 	    p = idPositionRegCli(cliReg, idCliente);
-	    if (cli[p].id == idCliente && strcmp(cli[p].estado, "Activo") == 0)
+	    if (cliReg[p].id == idCliente && strcmp(cliReg[p].estado, "Activo") == 0)
 	    {
 	    	displayRegistroCli(p, 8);
 		    gotoxy(10,14);
 			printf("%cEst%c seguro que quiere editar el registro del cliente con la ID `%i`? (Y / N): ", 168, 160, idCliente);
 		    option = yesOrNo(1);
 		}
-		while(idCliente == cliReg[p].id && strcmp(cli[p].estado, "Activo") == 0) // Puedes modificar mientras la ID coincida y el cliente se encuentre activo
+		while(idCliente == cliReg[p].id && strcmp(cliReg[p].estado, "Activo") == 0) // Puedes modificar mientras la ID coincida y el cliente se encuentre activo
 	    {
 	    	system("cls");
 	    	if (option == 'N')
