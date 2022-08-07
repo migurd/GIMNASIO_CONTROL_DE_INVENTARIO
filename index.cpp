@@ -2926,8 +2926,8 @@ void addRegistroEnt(int idEntrenador) {
 		        printf("ID: %i", idEntrenador);
 				gotoxy(10,7);
 		        printf("Ingresa la fecha de registro: ");
-		        valitext(10, entReg[j].fechaRegistro);
-//		        valifec(entReg[j].fechaRegistro);
+//		        valitext(10, entReg[j].fechaRegistro);
+		        valifec(entReg[j].fechaRegistro);
 				gotoxy(10,10);
 	        	printf("%cEst%cn bien los datos? (Y / N): ", 168, 160);
 	        	option = yesOrNo(1);
@@ -3141,8 +3141,8 @@ void modificarRegistroEnt() {
         	displayRegistroEnt(p, 4);
             gotoxy(10,10);
 			printf("Ingresa la fecha de registro: ");
-			valitext(10, entReg[p].fechaRegistro);
-//	        valifec(entReg[p].fechaRegistro);
+//			valitext(10, entReg[p].fechaRegistro);
+	        valifec(entReg[p].fechaRegistro);
 	        gotoxy(10,12);
 	        printf("%cDesea guardar los cambios? (Y / N): ", 168);
 	        option = yesOrNo(1);
@@ -3237,8 +3237,8 @@ void altaRegistroEnt(int id, int y) {
 	    	strcpy(entReg[p].estado, "Activo"); // El estado queda desactivo y ya no se mostrar� o tomar� en cuenta
 			gotoxy(10,y+14);
 			printf("Fecha de alta: ");
-			valitext(10, entReg[p].altaRegistro);
-//	        valifec(entReg[p].altaRegistro);
+//			valitext(10, entReg[p].altaRegistro);
+	        valifec(entReg[p].altaRegistro);
 			gotoxy(10,y+16);
 			printf("%cGuardar los cambios y dar de alta el registro del entrenador con la ID `%i`? (Y / N): ", 168, id);
 		    option = yesOrNo(1);
@@ -3398,8 +3398,8 @@ void addRegistroCli(int idCliente) {
 		        printf("ID: %i", idCliente);
 				gotoxy(10,7);
 		        printf("Ingresa la fecha de registro: ");
-		        valitext(10, cliReg[j].fechaRegistro);
-//		        valifec(cliReg[j].fechaRegistro);
+//		        valitext(10, cliReg[j].fechaRegistro);
+		        valifec(cliReg[j].fechaRegistro);
 				gotoxy(10,10);
 	        	printf("%cEst%cn bien los datos? (Y / N): ", 168, 160);
 	        	option = yesOrNo(1);
@@ -3614,8 +3614,8 @@ void modificarRegistroCli() {
         	displayRegistroCli(p, 4);
             gotoxy(10,10);
 			printf("Ingresa la fecha de registro: ");
-			valitext(10, cliReg[p].fechaRegistro);
-//	        valifec(cliReg[p].fechaRegistro);
+//			valitext(10, cliReg[p].fechaRegistro);
+	        valifec(cliReg[p].fechaRegistro);
 	        gotoxy(10,12);
 	        printf("%cDesea guardar los cambios? (Y / N): ", 168);
 	        option = yesOrNo(1);
@@ -3710,8 +3710,8 @@ void altaRegistroCli(int id, int y) {
 	    	strcpy(cliReg[p].estado, "Activo"); // El estado queda desactivo y ya no se mostrar� o tomar� en cuenta
 			gotoxy(10,y+14);
 			printf("Fecha de alta: ");
-			valitext(10, cliReg[p].altaRegistro);
-//	        valifec(cliReg[p].altaRegistro);
+//			valitext(10, cliReg[p].altaRegistro);
+	        valifec(cliReg[p].altaRegistro);
 			gotoxy(10,y+16);
 			printf("%cGuardar los cambios y dar de alta el registro del cliente con la ID `%i`? (Y / N): ", 168, id);
 		    option = yesOrNo(1);
