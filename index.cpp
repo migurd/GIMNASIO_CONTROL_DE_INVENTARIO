@@ -254,18 +254,28 @@ void menu() {
 				break;
 			case 5:
 				system("cls");
-				gotoxy(46,10);
+				Sleep(500);
+				gotoxy(37, 4);
+				printf("Hecho por:");
+				Sleep(500);
+				gotoxy(40, 5);
+				printf("Ram%crez Gonz%clez Jos%c Manuel", 161, 160, 130);
+				Sleep(500);
+				gotoxy(40, 6);
+				printf("Qui Mora %cngel Ernesto", 181);
+				Sleep(500);
+				gotoxy(40, 7);
+				printf("Tirado Romero Juan Jos%c", 130);
+				Sleep(200);
+				gotoxy(44,12);
+				printf("______________");
+				gotoxy(46,14);
 				printf("Cerrando...");
 				Sleep(500);
-				gotoxy(2, 1);
-				printf("Hecho por:");
-				gotoxy(2, 2);
-				printf("Ram%crez Gonz%clez Jos%c Manuel", 161, 160, 130);
-				gotoxy(2, 3);
-				printf("Qui Mora %cngel Ernesto", 181);
-				gotoxy(2, 4);
-				printf("Tirado Romero Juan Jos%c", 130);
-				gotoxy(2, 13);
+				gotoxy(44,16);
+				printf("______________");
+				Sleep(500);
+				gotoxy(80, 20);
 				break;
 			default:
 				system("cls");
