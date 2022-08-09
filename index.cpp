@@ -13,6 +13,7 @@ Tirado Romero Juan Jose
 #include <ctype.h>
 
 void gotoxy(int x,int y);
+void inicio();
 void menu();
 void menuServicio();
 void menuEntrenador();
@@ -181,34 +182,7 @@ struct registro {
 
 int main() {
 //	system("COLOR C1");
-	gotoxy(40, 11);
-	printf(" $$$$$$\\ $$\\     $$\\ $$\\      $$\\                     $$$$$$$\\  $$$$$$$\\   $$$$$$\\     $$$$$\\ ");
-	Sleep(100);
-	gotoxy(40, 12);
-	printf("$$  __$$\\\\$$\\   $$  |$$$\\    $$$ |                    $$  __$$\\ $$  __$$\\ $$  __$$\\    \\__$$ |");
-	Sleep(200);
-	gotoxy(40, 13);
-	printf("$$ /  \\__|\\$$\\ $$  / $$$$\\  $$$$ |                    $$ |  $$ |$$ |  $$ |$$ /  $$ |      $$ |");
-	Sleep(250);
-	gotoxy(40, 14);
-	printf("$$ |$$$$\\  \\$$$$  /  $$\\$$\\$$ $$ |                    $$$$$$$  |$$$$$$$  |$$ |  $$ |      $$ |");
-	Sleep(275);
-	gotoxy(40, 15);
-	printf("$$ |\\_$$ |  \\$$  /   $$ \\$$$  $$ |                    $$  ____/ $$  __$$< $$ |  $$ |$$\\   $$ |");
-	Sleep(300);
-	gotoxy(40, 16);
-	printf("$$ |  $$ |   $$ |    $$ |\\$  /$$ |                    $$ |      $$ |  $$ |$$ |  $$ |$$ |  $$ |");
-	Sleep(310);
-	gotoxy(40, 17);
-	printf("\\$$$$$$  |   $$ |    $$ | \\_/ $$ |                    $$ |      $$ |  $$ | $$$$$$  |\\$$$$$$  |");
-	Sleep(350);
-	gotoxy(40, 18);
-	printf(" \\______/    \\__|    \\__|     \\__|      $$$$$$\\       \\__|      \\__|  \\__| \\______/  \\______/ ");
-	Sleep(400);
-	gotoxy(10, 19);
-	printf("                                        \\______|                                              ");
-	gotoxy(134, 20);
-	getch();
+	inicio();
 	menu();
 	return 0;
 }
@@ -4549,8 +4523,39 @@ char autoOrManual(int length) {
 // <=== EXTRAS ===>
 
 void gotoxy(int x,int y) {
-        COORD c;
-        c.X=x;
-        c.Y=y;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),c);
+	COORD c;
+	c.X=x;
+	c.Y=y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),c);
+}
+ 
+void inicio() {
+	gotoxy(40, 11);
+	printf(" $$$$$$\\ $$\\     $$\\ $$\\      $$\\                     $$$$$$$\\  $$$$$$$\\   $$$$$$\\     $$$$$\\ ");
+	Sleep(100);
+	gotoxy(40, 12);
+	printf("$$  __$$\\\\$$\\   $$  |$$$\\    $$$ |                    $$  __$$\\ $$  __$$\\ $$  __$$\\    \\__$$ |");
+	Sleep(200);
+	gotoxy(40, 13);
+	printf("$$ /  \\__|\\$$\\ $$  / $$$$\\  $$$$ |                    $$ |  $$ |$$ |  $$ |$$ /  $$ |      $$ |");
+	Sleep(250);
+	gotoxy(40, 14);
+	printf("$$ |$$$$\\  \\$$$$  /  $$\\$$\\$$ $$ |                    $$$$$$$  |$$$$$$$  |$$ |  $$ |      $$ |");
+	Sleep(275);
+	gotoxy(40, 15);
+	printf("$$ |\\_$$ |  \\$$  /   $$ \\$$$  $$ |                    $$  ____/ $$  __$$< $$ |  $$ |$$\\   $$ |");
+	Sleep(300);
+	gotoxy(40, 16);
+	printf("$$ |  $$ |   $$ |    $$ |\\$  /$$ |                    $$ |      $$ |  $$ |$$ |  $$ |$$ |  $$ |");
+	Sleep(310);
+	gotoxy(40, 17);
+	printf("\\$$$$$$  |   $$ |    $$ | \\_/ $$ |                    $$ |      $$ |  $$ | $$$$$$  |\\$$$$$$  |");
+	Sleep(350);
+	gotoxy(40, 18);
+	printf(" \\______/    \\__|    \\__|     \\__|      $$$$$$\\       \\__|      \\__|  \\__| \\______/  \\______/ ");
+	Sleep(400);
+	gotoxy(40, 19);
+	printf("                                        \\______|                                              ");
+	gotoxy(134, 20);
+	getch();
 }
