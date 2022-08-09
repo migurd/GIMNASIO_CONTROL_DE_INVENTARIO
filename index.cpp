@@ -5,7 +5,7 @@ Qui Mora Angel Ernesto
 Tirado Romero Juan Jose
 */
 
-/* Dimensiones recomendadas: 170x40*/
+/* Dimensiones recomendadas: 175x40*/
 
 #include <stdio.h>
 #include <windows.h>
