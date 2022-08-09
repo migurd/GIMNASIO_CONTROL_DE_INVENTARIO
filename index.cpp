@@ -1180,8 +1180,6 @@ int idSiguienteSer(struct servicio ser[], int i) {
 	leerArchivoServicio();
 	if (ser[0].id > 1)
 		return 1;
-	if ((ser[i].id)+1 != (ser[i+1].id))  // Se actualiza por si se añadió un nuevo valor
-		leerArchivoServicio(); // Sin esto repite el mismo núemero dos veces seguidas el mismo n
 	if ((ser[i].id)+1 == (ser[i+1].id))
 		return idSiguienteSer(ser, i+1);
 	return ser[i].id + 1;
@@ -2074,8 +2072,6 @@ int idSiguienteEnt(struct entrenador ent[], int i) {
 	leerArchivoEntrenador();
 	if (ent[0].id > 1)
 		return 1;
-	if ((ent[i].id)+1 != (ent[i+1].id))  // Se actualiza por si se añadió un nuevo valor
-		leerArchivoEntrenador(); // Sin esto repite el mismo núemero dos veces seguidas el mismo n
 	if ((ent[i].id)+1 == (ent[i+1].id))
 		return idSiguienteEnt(ent, i+1);
 	return ent[i].id + 1;
@@ -2916,8 +2912,6 @@ int idSiguienteCli(struct cliente cli[], int i) {
 	leerArchivoCliente();
 	if (cli[0].id > 1)
 		return 1;
-	if ((cli[i].id)+1 != (cli[i+1].id)) // Sin esto repite el mismo núemero dos veces seguidas
-		leerArchivoCliente();
 	if ((cli[i].id)+1 == (cli[i+1].id))
 		return idSiguienteCli(cli, i+1);
 	return cli[i].id + 1;
