@@ -259,7 +259,7 @@ void menu() {
 				printf("Hecho por:");
 				Sleep(500);
 				gotoxy(40, 5);
-				printf("Ram%crez Gonz%clez Jos%c Manuel", 161, 160, 130);
+				printf("Ram%crez Gonz%clez Jos%c Manuel", 160, 161, 130);
 				Sleep(500);
 				gotoxy(40, 6);
 				printf("Qui Mora %cngel Ernesto", 181);
