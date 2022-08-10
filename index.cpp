@@ -832,6 +832,8 @@ void modificarServicio() {
 	        gotoxy(10,11);
 	        printf("Descripci%cn del servicio: ", 162);
 	        valiDescripcion(50, ser[p].descripcion);
+	        gotoxy(10,13);
+	        printf("%cDesea guardar los cambios? (Y / N): ", 168);
 	        option = yesOrNo(1);
 			gotoxy(10,19);
 			// Primero guarda la variable cambiada y la mueve al principio,
