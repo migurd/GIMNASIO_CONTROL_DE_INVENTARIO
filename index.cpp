@@ -106,7 +106,7 @@ void valifec(char *pfecha);
 void valiTelefono(char *pnom, int length);
 
 // Un negocio primero necesita algo que ofrecer (SERVICIOS), en segundo lugar, empleados (ENTRENADORES),
-// y finalmentem, un negocio necesita clientes para mantenerse a flote, ys los CLIENTES necesitan
+// y finalmente, un negocio necesita clientes para mantenerse a flote, y los CLIENTES necesitan
 // un tipo de registro o suscripción para estar activos o estar inactivos temporalmente (REGISTRO). FIN
 // ---------------------------------------------------------------------------------------------------------
 
@@ -161,7 +161,7 @@ struct cliente {
 	char direccion[21];
 	
 	// <--- Estas se rellenarán una vez que se dé de alta, antes de serán NULL --->
-	char especialidadBus[13]; // Especialidad buscada || Si no coincide con una especialidad, te mostrará los servicios disponibles y te preguntará si quieres estar con otro servicio
+	char especialidadBus[13]; 
 	char turno[11]; // ---------------------- Turno	|| Modificable solamente en registro 	|| NULL por defecto
 	int idEntrenador;	// new || Sugiere iDs de entrenadores que coincidan con tanto turno como especialidad, si no hay, te dice que no hay entrenadores con
 						// lo solicitado, pero sugiere registrarse, pero con su estado inactivo para tenerlo guardado en un futuro que se necesite. FIN
@@ -233,7 +233,7 @@ void menu() {
 				printf("Hecho por:");
 				Sleep(500);
 				gotoxy(40, 5);
-				printf("Ram%crez Gonz%clez Jos%c Manuel", 160, 161, 130);
+				printf("Gonz%clez Ram%crez Jos%c Manuel", 160, 161, 130);
 				Sleep(500);
 				gotoxy(40, 6);
 				printf("Qui Mora %cngel Ernesto", 181);
