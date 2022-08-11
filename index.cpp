@@ -1009,8 +1009,12 @@ void altaServicio(int id, int y) {
 			gotoxy(10,5);
 			printf("%cDesea buscar otro servicio para dar de alta? (Y / N): ", 168, 164);
 			option = yesOrNo(1);
-			if (option == 'N')
-				return;	
+			if (option == 'Y'){
+				altaServicio(0,y);
+				return;
+			}
+			if (option == 'N')		
+				return;
 		}
 		else {
 			system("cls");
@@ -1847,8 +1851,12 @@ void altaEntrenador(int id, int y) {
 			gotoxy(10,5);
 			printf("%cDesea buscar otro entrenador para dar de alta? (Y / N): ", 168, 164);
 			option = yesOrNo(1);
-			if (option == 'N')
-				return;	
+			if (option == 'Y'){
+				altaEntrenador(0,y);
+				return;
+			}
+			if (option == 'N')		
+				return;
 		}
 		else {
 			system("cls");
@@ -2691,8 +2699,12 @@ void altaCliente(int id, int y) {
 			gotoxy(10,5);
 			printf("%cDesea buscar otro cliente para dar de alta? (Y / N): ", 168, 164);
 			option = yesOrNo(1);
-			if (option == 'N')
-				return;	
+			if (option == 'Y'){
+				altaCliente(0,y);
+				return;
+			}
+			if (option == 'N')		
+				return;
 		}
 		else {
 			system("cls");
