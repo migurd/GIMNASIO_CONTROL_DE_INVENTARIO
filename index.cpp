@@ -1903,6 +1903,8 @@ void bajaEntrenador(int id, int y) {
 	    	strcpy(ent[p].estado, "Inactivo"); // El estado queda desactivo y ya no se mostrar� o tomar� en cuenta
 	    	strcpy(ent[p].especialidad, "S/N");
     		strcpy(ent[p].turno, "S/N");
+    		ent[p].idServicio = 0;
+    		strcpy(ent[p].nombreServicio, "S/N");
 			gotoxy(10,y+14);
 			printf("Advertencia: Si se da de baja el entrenador, este perder%c su especialidad y turno, adem%cs de sus clientes vinculados.", 160, 160);
 			getch();
