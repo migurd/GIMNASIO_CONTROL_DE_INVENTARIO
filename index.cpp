@@ -253,7 +253,7 @@ void menu() {
 				break;
 			default:
 				system("cls");
-				gotoxy(40,8);
+				gotoxy(40, 10);
 				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
 				Sleep(1000);
 				break;
@@ -300,6 +300,7 @@ void menuServicio() {
 				break;
 			default:
 				system("cls");
+				gotoxy(40, 10);
 				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
 				Sleep(300);
 				break;
@@ -348,6 +349,7 @@ void menuEntrenador() {
 				break;
 			default:
 				system("cls");
+				gotoxy(40, 10);
 				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
 				Sleep(300);
 				break;
@@ -395,6 +397,7 @@ void menuCliente() {
 				break;
 			default:
 				system("cls");
+				gotoxy(40, 10);
 				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
 				Sleep(300);
 				break;
@@ -432,6 +435,7 @@ void menuRegistro() {
 				break;
 			default:
 				system("cls");
+				gotoxy(40, 10);
 				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
 				Sleep(300);
 				break;
@@ -469,6 +473,7 @@ void menuRegistroEnt() {
 				break;
 			default:
 				system("cls");
+				gotoxy(40, 10);
 				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
 				Sleep(300);
 				break;
@@ -506,6 +511,7 @@ void menuRegistroCli() {
 				break;
 			default:
 				system("cls");
+				gotoxy(40, 10);
 				printf("Opci%cn inv%clida. Elige de nuevo.", 162, 160);
 				Sleep(300);
 				break;
